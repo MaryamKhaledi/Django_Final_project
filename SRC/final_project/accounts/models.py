@@ -13,6 +13,7 @@ def valid_username(username):
 
 
 class User(AbstractUser):
+    """Users model"""
     RECOVERY_CHOICES = (
         ('phone_number', 'Phone'),
         ('email_address', 'Email'),
@@ -22,19 +23,19 @@ class User(AbstractUser):
         ('female', 'Female'),
         ('other', 'Other'),
     )
-    username = models.CharField(_('username'), validators=[valid_username], max_length=60, unique=True,
+    username = models.CharField(_('username'), validators=[valid_username], max_length=40, unique=True,
                                 help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
                                 error_messages={'unique': _("A accounts with that username already exists."),
                                                 })
-    first_name = models.CharField(max_length=30, null=True)
-    last_name = models.CharField(max_length=30, null=True)
+    first_name = models.CharField(max_length=20, null=True)
+    last_name = models.CharField(max_length=20, null=True)
     recovery = models.CharField(max_length=15, choices=RECOVERY_CHOICES, default='')
-    email = models.CharField(unique=True, max_length=60)
+    email = models.CharField(unique=True, max_length=50)
     phone_number = models.CharField(max_length=15, unique=True, validators=[], help_text='', error_messages={})
-    password = models.CharField(max_length=64, )
+    # password = models.CharField(max_length=45, )
     birth_date = models.DateTimeField(null=True, )
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
-    country = models.CharField(max_length=50, null=True)
+    country = models.CharField(max_length=40, null=True)
     is_active = models.BooleanField(default=False)
     # is_staff = models.BooleanField(default=False)
     objects = UserManager()

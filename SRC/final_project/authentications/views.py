@@ -44,6 +44,9 @@ from .tokens import account_activation_token
 #         context = {}
 #         return render(request, 'authentications/login.html', context)
 
+def index(request):
+    return render(request, "authentications/index.html")
+
 
 class LoginView(View):
     def get(self, request):
@@ -62,16 +65,20 @@ class LoginView(View):
                 login(request, user)
                 return redirect('inbox', pk=user_login.id)
             else:
-                return render(request, '')
+                return render(request, 'authentications/login.html',
+                              messages.error(request, f"{request.POST.get('username')} is not active"))
+        else:
+            return render(request, 'authentications/login.html',
+                          messages.error(request, 'You password or Email is incorrect'))
 
 
-class SignUpView(View):
+class RegisterView(View):
     def get(self, request, *args, **kwargs):
-        form = self.RegisterForm()
+        form = RegisterForm()
         return render(request, 'authentications/register.html', {'form': form})
 
     def post(self, request, *args, **kwargs):
-        form = self.RegisterForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False  # Deactivate account till it is confirmed
@@ -108,12 +115,12 @@ class ActivateAccount(View):
             user.save()
             login(request, user)
             messages.success(request, ('Your account have been confirmed.'))
-            return redirect('login')
+            return redirect('home')
         else:
             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('register')
+            return redirect('home')
 
 
 def logout(request):
-    logout(request)
+    # logout(request)
     return redirect('login')
