@@ -115,10 +115,10 @@ class ActivateAccount(View):
             user.save()
             login(request, user)
             messages.success(request, ('Your account have been confirmed.'))
-            return redirect('home')
+            return redirect('/mail_page/home')
         else:
             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('home')
+            return redirect('/mail_page/home')
 
 
 def logout(request):
