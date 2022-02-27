@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="mail_page/load.css">
-    <title>Loading page</title>
-</head>
-<body>
-<div class="load">
-    <hr/>
-    <hr/>
-    <hr/>
-    <hr/>
-</div>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %} Inbox {% endblock %}
+
+<link rel="stylesheet" href="static/mail_page/load.css">
+<title>Loading page</title>
+
+{% block content %}
+    <div class="load">
+        <hr/>
+        <hr/>
+        <hr/>
+        <hr/>
+    </div>
+{% endblock %}

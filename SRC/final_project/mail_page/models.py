@@ -24,7 +24,7 @@ class Signature(models.Model):
     is_send = models.BooleanField()
 
     def __str__(self):
-        return self.send
+        return self.is_send
 
 
 class Contacts(models.Model):

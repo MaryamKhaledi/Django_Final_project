@@ -16,16 +16,23 @@ def home(request, pk):
     return HttpResponse(f"{pk}'re welcome")
 
 
-class ComposeEmail(View):
+class ComposeEmail(View, LoginRequiredMixin):
     form_class = EmailForm
 
-    def post(self, request):
+    def get(self, request, *args, **kwargs):
+        form = self.form_class
+        return render(request, 'mail_page/compose.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         # fields = ['receiver', 'subject', 'cc', 'bcc', 'body', 'file', 'signature', 'timestamp']
         if form.is_valid():
             cd = form.cleaned_data
-            Email.objects.create(subject=cd['subject'], cc=cd['cc'], bcc=cd['bcc'], body=cd['body'],
-                                 created=cd['file'], signature=cd['signature'], timestamp=['timestamp'])
+            users = User.objects.filter(email__in=cd)  # in khate be dalile erorr ezafe shod
+            new_mail = Email.objects.create(subject=cd['subject'], body=cd['body'],
+                                            created=cd['file'])
+            new_mail.cc.set(users)  # in khate be dalile erorr ezafe shod
+            new_mail.bcc.set(users)  # in khate be dalile erorr ezafe shod
             messages.success(request, f'todo created successfully', 'success')
 
         return render(request, 'mail_page/compose.html', {'form': form})
