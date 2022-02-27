@@ -23,20 +23,24 @@ class RegisterForm(forms.ModelForm):
 User = get_user_model()
 
 
+# class LoginForm(forms.Form):
+#     user_name = forms.CharField(
+#         widget=forms.TextInput(attrs={'placeholder': 'نام کاربری', 'class': 'form-control'}),
+#         label='نام کاربری'
+#     )
+#
+#     password = forms.CharField(
+#         widget=forms.PasswordInput(attrs={'placeholder': 'کلمه عبور', 'class': 'form-control'}),
+#         label='کلمه عبور'
+#     )
+#
+#     def clean_user_name(self):
+#         user_name = self.cleaned_data.get('user_name')
+#         is_exists_user = User.objects.filter(username=user_name).exists()
+#         if not is_exists_user:
+#             raise forms.ValidationError('کاربری با مشخصات یافت شده ثبت نام نکرده است')
+#         return user_name
+
 class LoginForm(forms.Form):
-    user_name = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': 'نام کاربری', 'class': 'form-control'}),
-        label='نام کاربری'
-    )
-
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'کلمه عبور', 'class': 'form-control'}),
-        label='کلمه عبور'
-    )
-
-    def clean_user_name(self):
-        user_name = self.cleaned_data.get('user_name')
-        is_exists_user = User.objects.filter(username=user_name).exists()
-        if not is_exists_user:
-            raise forms.ValidationError('کاربری با مشخصات یافت شده ثبت نام نکرده است')
-        return user_name
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))

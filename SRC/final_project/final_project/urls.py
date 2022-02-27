@@ -17,12 +17,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from authentications.views import *
 
 urlpatterns = [
-  path('authentications/', admin.site.urls),
+  path('admin/', admin.site.urls),
   path('', include('authentications.urls')),
+  path('', index, name='index'),
   path('mail_page/', include('mail_page.urls')),
   path('accounts/', include('accounts.urls')),
 ] + static(settings.STATIC_URL)
-
-

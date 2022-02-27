@@ -63,7 +63,9 @@ class LoginView(View):
             # برای گرفتن ایدی کاربر که لاگین شده با ایمیل
             if user.is_active:
                 login(request, user)
-                return redirect('inbox', pk=user_login.id)
+                # print("متنظر رسیدن به هوم")
+                return redirect('home', pk=user_login.id)
+                # return redirect('home')
             else:
                 return render(request, 'authentications/login.html',
                               messages.error(request, f"{request.POST.get('username')} is not active"))
@@ -107,18 +109,20 @@ class ActivateAccount(View):
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
-
+            print('ghabl as if')
         if user is not None and account_activation_token.check_token(user, token):
+            print('ghabl as active')
             user.is_active = True
             user.username += '@eml.com'
             # user.profile.email_confirmed = True
             user.save()
             login(request, user)
             messages.success(request, ('Your account have been confirmed.'))
-            return redirect('/mail_page/home')
+
+            return redirect('authentications:home')
         else:
             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('/mail_page/home')
+            return redirect('authentications:home')
 
 
 def logout(request):
