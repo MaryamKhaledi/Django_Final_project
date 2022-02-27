@@ -2,177 +2,207 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="static/mail_page/css/home.scss">
     <title>Title</title>
 </head>
 <body>
 <div id="window">
-	<section id="menu">
-		<div class="header">
-			<div class="logo-wrap">
-				<img src="https://emilcarlsson.se/assets/svg/feathericons/send.svg" alt="Notifications" class="svg">
-				Mailio
-			</div>
-			<div class="icon-wrap">
+    <section id="menu">
+        <div class="header">
+            <div class="logo-wrap">
+                <img src="https://emilcarlsson.se/assets/svg/feathericons/send.svg" alt="Notifications" class="svg">
+                Mailio
+            </div>
+            <div class="icon-wrap">
 				<span class="tooltip" data-title="Notifications">
 					<img src="https://emilcarlsson.se/assets/svg/feathericons/bell.svg" alt="Notifications" class="svg">
 				</span>
-			</div>
-		</div>
+            </div>
+        </div>
 
-		<div class="content">
-				<button>
-					<img src="https://emilcarlsson.se/assets/svg/feathericons/mail.svg" alt="New message" class="svg">
-					New message
-				</button>
+        <div class="content">
+            <button>
+                <img src="https://emilcarlsson.se/assets/svg/feathericons/mail.svg" alt="New message" class="svg">
+                New message
+            </button>
 
-				<ul id="categories">
-					<li class="selected">
-						<img src="https://emilcarlsson.se/assets/svg/feathericons/inbox.svg" alt="Inbox" class="svg">
-					Inbox
-						<span class="badge">3</span>
-					</li>
-					<li>
-						<img src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="Marked" class="svg">
-					Marked
-					</li>
-					<li>
-						<img src="https://emilcarlsson.se/assets/svg/feathericons/edit-2.svg" alt="Drafts" class="svg">
-					Drafts
-						<span class="badge">2</span>
-					</li>
-					<li>
-						<img src="https://emilcarlsson.se/assets/svg/feathericons/trash-2.svg" alt="Deleted" class="svg">
-					Deleted
-					</li>
-				</ul>
+            <ul id="categories">
+                <li class="selected">
+                    <img src="https://emilcarlsson.se/assets/svg/feathericons/inbox.svg" alt="Inbox" class="svg">
+                    Inbox
+                    <span class="badge">3</span>
+                </li>
+                <li>
+                    <img src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="Marked" class="svg">
+                    Marked
+                </li>
+                <li>
+                    <img src="https://emilcarlsson.se/assets/svg/feathericons/edit-2.svg" alt="Drafts" class="svg">
+                    Drafts
+                    <span class="badge">2</span>
+                </li>
+                <li>
+                    <img src="https://emilcarlsson.se/assets/svg/feathericons/trash-2.svg" alt="Deleted" class="svg">
+                    Deleted
+                </li>
+            </ul>
 
-				<ul id="custom-categories">
-					<li>Personal</li>
-					<li>Work</li>
-					<li><span>Add category</span></li>
-				</ul>
-			</div>
-	</section>
+            <ul id="custom-categories">
+                <li>Personal</li>
+                <li>Work</li>
+                <li><span>Add category</span></li>
+            </ul>
+        </div>
+    </section>
 
-	<section id="emails">
-		<div class="header">
-			<div class="icon-wrap">
+    <section id="emails">
+        <div class="header">
+            <div class="icon-wrap">
 				<span class="tooltip" data-title="Remove">
-					<img class="svg tooltip" src="https://emilcarlsson.se/assets/svg/feathericons/trash-2.svg" alt="Remove">
+					<img class="svg tooltip" src="https://emilcarlsson.se/assets/svg/feathericons/trash-2.svg"
+                         alt="Remove">
 				</span>
-				<span class="tooltip" data-title="Search">
-					<img class="svg tooltip" src="https://emilcarlsson.se/assets/svg/feathericons/search.svg" alt="Search" title="Search">
+                <span class="tooltip" data-title="Search">
+					<img class="svg tooltip" src="https://emilcarlsson.se/assets/svg/feathericons/search.svg"
+                         alt="Search" title="Search">
 				</span>
-				<span class="tooltip" data-title="Move to folder">
-					<img class="svg tooltip" src="https://emilcarlsson.se/assets/svg/feathericons/folder.svg" alt="Move to folder" title="Move to folder">
+                <span class="tooltip" data-title="Move to folder">
+					<img class="svg tooltip" src="https://emilcarlsson.se/assets/svg/feathericons/folder.svg"
+                         alt="Move to folder" title="Move to folder">
 				</span>
-			</div>
-		</div>
+            </div>
+        </div>
 
-		<div class="content">
-			<ul id="emails-list">
-				<li class="selected">
-					<div class="left-col">
-						<div class="avatar">M</div>
-						<span class="tooltip" data-title="More">
-							<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg" alt="More">
+        <div class="content">
+            <ul id="emails-list">
+                <li class="selected">
+                    <div class="left-col">
+                        <div class="avatar">M</div>
+                        <span class="tooltip" data-title="More">
+							<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg"
+                                 alt="More">
 						</span>
-					</div>
-					<div class="right-col">
-						<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="More">
-						<p class="sender">Melvin Arnold</p>
-						<h4 class="title">Do Androids Dream of Electric Sheep?</h4>
-						<p class="bread-text-preview">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam venenatis mauris id mi vestibulum faucibus. Etiam non tristique eros. Aenean et ullamcorper velit, quis varius est.</p>
-						<p class="recieved">3 min ago</p>
-					</div>
-				</li>
-				<li class="marked">
-					<div class="left-col">
-						<div class="avatar">J</div>
-						<span class="tooltip" data-title="More">
-							<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg" alt="More">
+                    </div>
+                    <div class="right-col">
+                        <img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="More">
+                        <p class="sender">Melvin Arnold</p>
+                        <h4 class="title">Do Androids Dream of Electric Sheep?</h4>
+                        <p class="bread-text-preview">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam
+                            venenatis mauris id mi vestibulum faucibus. Etiam non tristique eros. Aenean et ullamcorper
+                            velit, quis varius est.</p>
+                        <p class="recieved">3 min ago</p>
+                    </div>
+                </li>
+                <li class="marked">
+                    <div class="left-col">
+                        <div class="avatar">J</div>
+                        <span class="tooltip" data-title="More">
+							<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg"
+                                 alt="More">
 						</span>
-					</div>
-					<div class="right-col">
-						<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="More">
-						<p class="sender">Jason Owens</p>
-						<h4 class="title">I Was Told There'd Be Cake</h4>
-						<p class="bread-text-preview">Etiam non tristique eros. Aenean et ullamcorper velit, quis varius est.</p>
-						<p class="recieved">1 day ago</p>
-					</div>
-				</li>
-				<li>
-					<div class="left-col">
-						<div class="avatar">E</div>
-						<span class="tooltip" data-title="More">
-							<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg" alt="More">
+                    </div>
+                    <div class="right-col">
+                        <img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="More">
+                        <p class="sender">Jason Owens</p>
+                        <h4 class="title">I Was Told There'd Be Cake</h4>
+                        <p class="bread-text-preview">Etiam non tristique eros. Aenean et ullamcorper velit, quis varius
+                            est.</p>
+                        <p class="recieved">1 day ago</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="left-col">
+                        <div class="avatar">E</div>
+                        <span class="tooltip" data-title="More">
+							<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg"
+                                 alt="More">
 						</span>
-					</div>
-					<div class="right-col">
-						<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="More">
-						<p class="sender">Edward Michael</p>
-						<h4 class="title">Extremely Loud and Incredibly Close</h4>
-						<p class="bread-text-preview">Nullam a lacus cursus, tincidunt orci in, mattis ipsum. Quisque volutpat ultricies pretium.</p>
-						<p class="recieved">2 days ago</p>
-					</div>
-				</li>
-				<li>
-					<div class="left-col">
-						<div class="avatar">C</div>
-						<span class="tooltip" data-title="More">
-							<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg" alt="More">
+                    </div>
+                    <div class="right-col">
+                        <img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="More">
+                        <p class="sender">Edward Michael</p>
+                        <h4 class="title">Extremely Loud and Incredibly Close</h4>
+                        <p class="bread-text-preview">Nullam a lacus cursus, tincidunt orci in, mattis ipsum. Quisque
+                            volutpat ultricies pretium.</p>
+                        <p class="recieved">2 days ago</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="left-col">
+                        <div class="avatar">C</div>
+                        <span class="tooltip" data-title="More">
+							<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg"
+                                 alt="More">
 						</span>
-					</div>
-					<div class="right-col">
-						<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="More">
-						<p class="sender">Carolyn Hardin</p>
-						<h4 class="title">Brave New World </h4>
-						<p class="bread-text-preview">Maecenas non leo vel ante porta posuere. Proin sed efficitur odio.</p>
-						<p class="recieved">2 days ago</p>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</section>
+                    </div>
+                    <div class="right-col">
+                        <img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/star.svg" alt="More">
+                        <p class="sender">Carolyn Hardin</p>
+                        <h4 class="title">Brave New World </h4>
+                        <p class="bread-text-preview">Maecenas non leo vel ante porta posuere. Proin sed efficitur
+                            odio.</p>
+                        <p class="recieved">2 days ago</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
 
-	<section id="preview">
-		<div class="header">
-			<div class="icon-wrap">
+    <section id="preview">
+        <div class="header">
+            <div class="icon-wrap">
 				<span class="tooltip" data-title="More">
-					<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg" alt="More">
+					<img class="svg" src="https://emilcarlsson.se/assets/svg/feathericons/more-horizontal.svg"
+                         alt="More">
 				</span>
-			</div>
-		</div>
+            </div>
+        </div>
 
-		<div class="content-wrap">
-			<div class="actions">
-				<button class="primary">Reply</button>
-				<button class="secondary">Forward</button>
-			</div>
+        <div class="content-wrap">
+            <div class="actions">
+                <button class="primary">Reply</button>
+                <button class="secondary">Forward</button>
+            </div>
 
-			<div class="quick-actions">
+            <div class="quick-actions">
 				<span class="tooltip" data-title="Tag">
 					<img src="https://emilcarlsson.se/assets/svg/feathericons/tag.svg" alt="Tag" class="svg">
 				</span>
-				<span class="tooltip" data-title="Print">
+                <span class="tooltip" data-title="Print">
 					<img src="https://emilcarlsson.se/assets/svg/feathericons/printer.svg" alt="Print" class="svg">
 				</span>
-			</div>
+            </div>
 
-			<div class="content">
-			<p class="date">1st February 2018</p>
-			<h2>Do Androids Dream of Electric Sheep?</h2>
-			<p class="bread-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam venenatis mauris id mi vestibulum faucibus. Etiam non tristique eros. Aenean et ullamcorper velit, quis varius est. Nam vitae purus nisi. Quisque semper ipsum ac purus ornare malesuada. Pellentesque aliquam vitae turpis eu consequat. Aliquam malesuada nisl non libero fringilla pellentesque et non sem. Integer sed mauris porttitor, auctor risus in, ultricies magna. Vestibulum consequat arcu euismod ipsum fringilla, nec ultrices velit posuere. Aliquam rhoncus interdum neque ac facilisis.
+            <div class="content">
+                <p class="date">1st February 2018</p>
+                <h2>Do Androids Dream of Electric Sheep?</h2>
+                <p class="bread-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam venenatis mauris id
+                    mi vestibulum faucibus. Etiam non tristique eros. Aenean et ullamcorper velit, quis varius est. Nam
+                    vitae purus nisi. Quisque semper ipsum ac purus ornare malesuada. Pellentesque aliquam vitae turpis
+                    eu consequat. Aliquam malesuada nisl non libero fringilla pellentesque et non sem. Integer sed
+                    mauris porttitor, auctor risus in, ultricies magna. Vestibulum consequat arcu euismod ipsum
+                    fringilla, nec ultrices velit posuere. Aliquam rhoncus interdum neque ac facilisis.
 
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam venenatis mauris id mi vestibulum faucibus. Etiam non tristique eros. Aenean et ullamcorper velit, quis varius est. Nam vitae purus nisi. Quisque semper ipsum ac purus ornare malesuada. Pellentesque aliquam vitae turpis eu consequat. Aliquam malesuada nisl non libero fringilla pellentesque et non sem. Integer sed mauris porttitor, auctor risus in, ultricies magna. Vestibulum consequat arcu euismod ipsum fringilla, nec ultrices velit posuere. Aliquam rhoncus interdum neque ac facilisis.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam venenatis mauris id mi vestibulum
+                    faucibus. Etiam non tristique eros. Aenean et ullamcorper velit, quis varius est. Nam vitae purus
+                    nisi. Quisque semper ipsum ac purus ornare malesuada. Pellentesque aliquam vitae turpis eu
+                    consequat. Aliquam malesuada nisl non libero fringilla pellentesque et non sem. Integer sed mauris
+                    porttitor, auctor risus in, ultricies magna. Vestibulum consequat arcu euismod ipsum fringilla, nec
+                    ultrices velit posuere. Aliquam rhoncus interdum neque ac facilisis.
 
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam venenatis mauris id mi vestibulum faucibus. Etiam non tristique eros. Aenean et ullamcorper velit, quis varius est. Nam vitae purus nisi. Quisque semper ipsum ac purus ornare malesuada. Pellentesque aliquam vitae turpis eu consequat. Aliquam malesuada nisl non libero fringilla pellentesque et non sem. Integer sed mauris porttitor, auctor risus in, ultricies magna. Vestibulum consequat arcu euismod ipsum fringilla, nec ultrices velit posuere. Aliquam rhoncus interdum neque ac facilisis.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam venenatis mauris id mi vestibulum
+                    faucibus. Etiam non tristique eros. Aenean et ullamcorper velit, quis varius est. Nam vitae purus
+                    nisi. Quisque semper ipsum ac purus ornare malesuada. Pellentesque aliquam vitae turpis eu
+                    consequat. Aliquam malesuada nisl non libero fringilla pellentesque et non sem. Integer sed mauris
+                    porttitor, auctor risus in, ultricies magna. Vestibulum consequat arcu euismod ipsum fringilla, nec
+                    ultrices velit posuere. Aliquam rhoncus interdum neque ac facilisis.
 
-			Cheers,
-			<span class="sender">Melvin Arnold</span></p>
-		</div>
-		</div>
-	</section>
+                    Cheers,
+                    <span class="sender">Melvin Arnold</span></p>
+            </div>
+        </div>
+    </section>
 </div>
+<script src="static/mail_page/js/home.js"></script>
 </body>
 </html>
