@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %} Inbox {% endblock %}
+{% block content %}
+    {% for email in all_emails %}
+        <p>{{ email.username }}</p>
+        <p>{{ email.subject }}</p>
+        <p>{{ email.body|truncatewords:30 }}</p>
+        <p>{{ email.timestamp }}</p>
+    {% endfor %}
+{% endblock %}

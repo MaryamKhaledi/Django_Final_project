@@ -16,10 +16,10 @@ def home(request, pk):
     return HttpResponse(f"{pk}'re welcome")
 
 
-class SendEmail(View):
+class ComposeEmail(View):
     form_class = EmailForm
 
-    def post(self, request, pk):
+    def post(self, request):
         form = self.form_class(request.POST, request.FILES)
         # fields = ['receiver', 'subject', 'cc', 'bcc', 'body', 'file', 'signature', 'timestamp']
         if form.is_valid():
@@ -28,10 +28,10 @@ class SendEmail(View):
                                  created=cd['file'], signature=cd['signature'], timestamp=['timestamp'])
             messages.success(request, f'todo created successfully', 'success')
 
-        return render(request, 'mail_page/sent.html', {'form': form})
+        return render(request, 'mail_page/compose.html', {'form': form})
 
 
-class Index(View, LoginRequiredMixin):
+class Inbox(View, LoginRequiredMixin):
     def get(self, request, pk):
         username = User.objects.get(pk=pk)
         received = Email.objects.filter(receiver=username).values()
@@ -40,3 +40,10 @@ class Index(View, LoginRequiredMixin):
         received_mail_cc = received.union(username_mail_cc)
         all_emails = received_mail_cc.union(received_mail_cc)
         return render(request, 'mail_page/inbox.html', {'user_id': pk, 'username': username, 'all_emails': all_emails})
+
+
+class SentEmail(View, LoginRequiredMixin):
+    def get(self, request, pk):
+        username = User.objects.get(pk=pk)
+        sent = Email.objects.filter(signature=username).values()
+        return render(request, 'mail_page/sent.html', {'sent': sent})

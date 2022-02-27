@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %} Sent {% endblock %}
+{% block content %}
+    {% for email in all_emails %}
+        <p>{{ email.receiver }}</p>
+        {% if email.subject %}
+            <p>{{ email.subject }}</p>
+        {% else %}
+            <p>No subject</p>
+        {% endif %}
+        {% if email.body %}
+            <p>{{ email.body|truncatewords:30 }}</p>
+        {% else %}
+            <p></p>
+        {% endif %}
+        <p>{{ email.timestamp }}</p>
+        <button type="submit" style="color: #19A68C"><a href="{% url 'sent_detail' email.id %}"></a>detail</button>
+    {% endfor %}
+{% endblock %}
