@@ -31,7 +31,7 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=20, null=True)
     recovery = models.CharField(max_length=15, choices=RECOVERY_CHOICES, default='')
     email = models.CharField(unique=True, max_length=50)
-    phone_number = models.CharField(max_length=15, unique=True, validators=[], help_text='', error_messages={})
+    phone_number = models.CharField(max_length=11, unique=True, validators=[], help_text='', error_messages={})
     # password = models.CharField(max_length=45, )
     birth_date = models.DateTimeField(null=True, )
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)

@@ -11,9 +11,9 @@ from django.views.generic import ListView, DetailView
 from django.core import mail
 
 
-def home(request, pk):
+def home(request):
     # render(request, 'mail_page/load.html', {'pk':pk})
-    return HttpResponse(f"{pk}'re welcome")
+    return render(request, 'mail_page/home.html', {})
 
 
 class ComposeEmail(LoginRequiredMixin, View):
@@ -28,11 +28,11 @@ class ComposeEmail(LoginRequiredMixin, View):
         form = self.form_class(request.POST)
         if form.is_valid():
             new_email = form.save(commit=False)
-            new_email.user = request.user
-            new_email.signature = request.user
+            new_email.sender = request.sender
+            # new_email.signature = request.sender
             # new_email.timestamp = request.timezone.now()
             new_email.save()
-        messages.success(request, 'you created a new email', 'success☺')
+        messages.success(request, 'you created a new email', 'success')
         return redirect('mail_page:home', new_email.id)
 
 

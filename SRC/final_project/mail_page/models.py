@@ -20,8 +20,8 @@ class Label(models.Model):
 
 
 class Signature(models.Model):
-    username = models.CharField(max_length=60, )
-    is_send = models.BooleanField()
+    user = models.OneToOneField(User, on_delete=models.PROTECT, max_length=60)
+    is_send = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
         return self.is_send
@@ -30,7 +30,7 @@ class Signature(models.Model):
 class Contacts(models.Model):
     name = models.CharField(max_length=60)
     email = models.CharField(max_length=60)
-    phon_number = models.CharField(max_length=15)
+    phon_number = models.CharField(max_length=11, blank=True, null=True)
     birth_date = models.DateTimeField(null=True, )
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contacts_owner")
 
@@ -39,20 +39,22 @@ class Contacts(models.Model):
 
 
 class Email(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="emails")
-    signature = models.ForeignKey(User, on_delete=models.PROTECT, related_name="emails_sent")
-    contacts = models.ManyToManyField(Contacts, related_name="emails_contacts")
-    receiver = models.ManyToManyField(User, related_name="emails_received")
-    cc = models.ManyToManyField(User, related_name="mail_cc", blank=True, null=True)
-    bcc = models.ManyToManyField(User, related_name="mail_bcc", blank=True, null=True)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    signature = models.ForeignKey(Signature, on_delete=models.PROTECT, related_name="signature")
+    # contacts = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True,
+    #                              related_name="contacts")
+    receiver = models.ManyToManyField(User, related_name="receiver")
+    cc = models.ManyToManyField(User, related_name="cc", blank=True)
+    bcc = models.ManyToManyField(User, related_name="bcc", blank=True)
     subject = models.CharField(max_length=100, blank=True, null=True)
     label = models.ManyToManyField(Label, blank=True, )
     body = models.TextField(blank=True, null=True)
-    file = models.FileField(validators=[file_size], blank=True, null=True)
-    timestamp = models.DateTimeField(default=timezone.now())  # زمان ارسال ایمیل
+    file = models.FileField(upload_to='', validators=[file_size], blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # زمان ارسال ایمیل
     is_read = models.BooleanField(default=False, )  # فیلد read هم مربوط به این هستش آیا اون ایمیل خونده شده یا نه؟
-    replay = models.ForeignKey('self', on_delete=models.DO_NOTHING, blank=True, null=True)
-    is_archived = models.BooleanField(default=False, )
+    # replay = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
+    is_archived = models.BooleanField(default=False, blank=True, null=True)
+    is_trash = models.BooleanField(default=False, blank=True, null=True)
 
     # فیلد archived هم مربوط به این هستش که آیا کاربر اون ایمیل رو آرشیو کرده یا نه.
 

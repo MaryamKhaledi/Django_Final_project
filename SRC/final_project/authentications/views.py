@@ -1,8 +1,10 @@
+from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
@@ -48,6 +50,15 @@ def index(request):
     return render(request, "authentications/index.html")
 
 
+# class Login(LoginView):
+#     def get_success_url(self):
+#         user = self.request.user
+#         if user.is_active:
+#             return reverse_lazy("account:home")
+#         else:
+#             return reverse_lazy("account:profile")
+
+
 class LoginView(View):
     def get(self, request):
         form = LoginForm()
@@ -64,7 +75,7 @@ class LoginView(View):
             if user.is_active:
                 login(request, user)
                 # print("متنظر رسیدن به هوم")
-                return redirect('mail_page:home', pk=user_login.id)
+                return redirect('mail_page:home')
                 # return redirect('home')
             else:
                 return render(request, 'authentications/login.html',
