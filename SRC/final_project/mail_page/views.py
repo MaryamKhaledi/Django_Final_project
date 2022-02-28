@@ -16,7 +16,8 @@ def home(request, pk):
     return HttpResponse(f"{pk}'re welcome")
 
 
-class ComposeEmail(View, LoginRequiredMixin):
+class ComposeEmail(LoginRequiredMixin, View):
+    # resiver moshakhas nist
     form_class = EmailForm
 
     def get(self, request, *args, **kwargs):
@@ -24,18 +25,37 @@ class ComposeEmail(View, LoginRequiredMixin):
         return render(request, 'mail_page/compose.html', {'form': form})
 
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST, request.FILES)
-        # fields = ['receiver', 'subject', 'cc', 'bcc', 'body', 'file', 'signature', 'timestamp']
+        form = self.form_class(request.POST)
         if form.is_valid():
-            cd = form.cleaned_data
-            users = User.objects.filter(email__in=cd)  # in khate be dalile erorr ezafe shod
-            new_mail = Email.objects.create(subject=cd['subject'], body=cd['body'],
-                                            created=cd['file'])
-            new_mail.cc.set(users)  # in khate be dalile erorr ezafe shod
-            new_mail.bcc.set(users)  # in khate be dalile erorr ezafe shod
-            messages.success(request, f'todo created successfully', 'success')
+            new_email = form.save(commit=False)
+            new_email.user = request.user
+            new_email.signature = request.user
+            # new_email.timestamp = request.timezone.now()
+            new_email.save()
+        messages.success(request, 'you created a new email', 'success☺')
+        return redirect('mail_page:home', new_email.id)
 
-        return render(request, 'mail_page/compose.html', {'form': form})
+
+# class ComposeEmail(View, LoginRequiredMixin):
+#     form_class = EmailForm
+#
+#     def get(self, request, *args, **kwargs):
+#         form = self.form_class
+#         return render(request, 'mail_page/compose.html', {'form': form})
+#
+#     def post(self, request, *args, **kwargs):
+#         form = self.form_class(request.POST, request.FILES)
+#         # fields = ['receiver', 'subject', 'cc', 'bcc', 'body', 'file', 'signature', 'timestamp']
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             users = User.objects.filter(email__in=cd)  # in khate be dalile erorr ezafe shod
+#             new_mail = Email.objects.create(subject=cd['subject'], body=cd['body'],
+#                                             created=cd['file'])
+#             new_mail.cc.set(users)  # in khate be dalile erorr ezafe shod
+#             new_mail.bcc.set(users)  # in khate be dalile erorr ezafe shod
+#             messages.success(request, f'todo created successfully', 'success')
+#
+#         return render(request, 'mail_page/home.html', {'form': form})
 
 
 class Inbox(View, LoginRequiredMixin):

@@ -49,7 +49,7 @@ class Email(models.Model):
     label = models.ManyToManyField(Label, blank=True, )
     body = models.TextField(blank=True, null=True)
     file = models.FileField(validators=[file_size], blank=True, null=True)
-    timestamp = models.DateTimeField(default=timezone.now)  # زمان ارسال ایمیل
+    timestamp = models.DateTimeField(default=timezone.now())  # زمان ارسال ایمیل
     is_read = models.BooleanField(default=False, )  # فیلد read هم مربوط به این هستش آیا اون ایمیل خونده شده یا نه؟
     replay = models.ForeignKey('self', on_delete=models.DO_NOTHING, blank=True, null=True)
     is_archived = models.BooleanField(default=False, )

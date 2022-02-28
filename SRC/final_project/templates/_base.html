@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {#    {% block head-extras %}{% endblock %}#}
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <style>{% block style %}{% endblock %}</style>
+
+</head>
+<body>
+{% include "layout/authentications/__nav.html" %}
+{% block content %} {% endblock %}
+
+<script>
+    {% block javascript %} {% endblock %}
+</script>
+</body>
+</html>
