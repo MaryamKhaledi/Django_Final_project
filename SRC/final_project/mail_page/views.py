@@ -12,7 +12,6 @@ from django.core import mail
 
 
 def home(request):
-    # render(request, 'mail_page/load.html', {'pk':pk})
     return render(request, 'mail_page/home.html', {})
 
 
@@ -29,7 +28,7 @@ class ComposeEmail(LoginRequiredMixin, View):
         if form.is_valid():
             new_email = form.save(commit=False)
             new_email.sender = request.sender
-            # new_email.signature = request.sender
+            new_email.signature = request.sender
             # new_email.timestamp = request.timezone.now()
             new_email.save()
         messages.success(request, 'you created a new email', 'success')

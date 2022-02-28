@@ -75,7 +75,7 @@ class LoginView(View):
             if user.is_active:
                 login(request, user)
                 # print("متنظر رسیدن به هوم")
-                return redirect('mail_page:home')
+                return redirect('mail_page:inbox', pk=user_login.id)
                 # return redirect('home')
             else:
                 return render(request, 'authentications/login.html',
