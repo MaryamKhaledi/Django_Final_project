@@ -2,7 +2,9 @@ from django import forms
 from .models import Email
 
 
-class EmailForm(forms.ModelForm):
+class NewEmailForm(forms.ModelForm):
+    """Form for the email model"""
+
     class Meta:
         model = Email
         fields = ['receiver', 'subject', 'cc', 'bcc', 'body', 'file']

@@ -23,6 +23,6 @@ urlpatterns = [
   path('admin/', admin.site.urls),
   path('', include('authentications.urls')),
   path('', index, name='index'),
-  path('mail_page/', include('mail_page.urls',namespace='mail_page')),
+  path('mail_page/', include('mail_page.urls', namespace='mail_page')),
   path('accounts/', include('accounts.urls')),
 ] + static(settings.STATIC_URL)

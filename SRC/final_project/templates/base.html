@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-
+    {% block link %}{% endblock %}
     <style>{% block style %}{% endblock %}</style>
-
 </head>
 <body>
-{% include "layout/authentications/__nav.html" %}
+{% include "navbar.html" %}
 {% block content %} {% endblock %}
 
 <script>

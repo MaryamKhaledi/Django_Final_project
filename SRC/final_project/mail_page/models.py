@@ -40,7 +40,8 @@ class Contacts(models.Model):
 
 class Email(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
-    signature = models.ForeignKey(Signature, on_delete=models.PROTECT, related_name="signature")
+    signature = models.ForeignKey(Signature, on_delete=models.PROTECT, related_name="signature",
+                                  blank=True, null=True)
     # contacts = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True,
     #                              related_name="contacts")
     receiver = models.ManyToManyField(User, related_name="receiver")

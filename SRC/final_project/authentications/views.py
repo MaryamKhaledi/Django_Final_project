@@ -1,10 +1,8 @@
-from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
@@ -12,51 +10,8 @@ from .forms import *
 from .tokens import account_activation_token
 
 
-# def register(request):
-#     if request.user.is_authenticated:
-#         return redirect('home')
-#     else:
-#
-#         form = RegisterForm()
-#
-#         if request.method == "POST":
-#             form = RegisterForm(request.POST)
-#             if form.is_valid():
-#                 form.save()
-#                 user = form.cleaned_data.get('username')
-#                 messages.success(request, 'Account was created for' + user)
-#                 return redirect('login')
-#         context = {'form': form}
-#         return render(request, 'authentications/register.html', context)
-
-# def login(request):
-#     if request.user.is_authenticated:
-#         return redirect('home')
-#     else:
-#         if request.method == "POST":
-#             username = request.POST.get('username')
-#             password = request.POST.get('password')
-#             user = authenticate(request, username=username, password=password)
-#
-#             if user is not None:
-#                 login(request, user)
-#                 return redirect('home')
-#             else:
-#                 messages.info(request, 'Username or password is incorrect')
-#         context = {}
-#         return render(request, 'authentications/login.html', context)
-
 def index(request):
     return render(request, "authentications/index.html")
-
-
-# class Login(LoginView):
-#     def get_success_url(self):
-#         user = self.request.user
-#         if user.is_active:
-#             return reverse_lazy("account:home")
-#         else:
-#             return reverse_lazy("account:profile")
 
 
 class LoginView(View):
@@ -71,18 +26,47 @@ class LoginView(View):
 
         if user:
             user_login = User.objects.get(username=username)
-            # برای گرفتن ایدی کاربر که لاگین شده با ایمیل
             if user.is_active:
                 login(request, user)
-                # print("متنظر رسیدن به هوم")
-                return redirect('mail_page:inbox', pk=user_login.id)
-                # return redirect('home')
+                return redirect('mail_page:compose')
             else:
                 return render(request, 'authentications/login.html',
                               messages.error(request, f"{request.POST.get('username')} is not active"))
         else:
             return render(request, 'authentications/login.html',
                           messages.error(request, 'You password or Email is incorrect'))
+
+
+# class LoginView(View):
+#     form_class = LoginForm
+#     template_name = 'authentications/login.html'
+#
+#     def setup(self, request, *args, **kwargs):
+#         self.next = request.GET.get('next')
+#         return super().setup(request, *args, **kwargs)
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         if request.user.is_authenticated:
+#             return redirect('mail_page:home')
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def get(self, request):
+#         form = self.form_class
+#         return render(request, self.template_name, {'form': form})
+#
+#     def post(self, request):
+#         form = self.form_class(request.POST)
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             user = authenticate(request, username=cd['username'], password=cd['password'])
+#             if user is not None:
+#                 login(request, user)
+#                 messages.success(request, 'you logged in successfully', 'success')
+#                 if self.next:
+#                     return redirect(self.next)
+#                 return redirect('mail_page:compose')
+#             messages.error(request, 'username or password is wrong', 'warning')
+#         return render(request, self.template_name, {'form': form})
 
 
 class RegisterView(View):
@@ -130,11 +114,17 @@ class ActivateAccount(View):
             login(request, user)
             messages.success(request, ('Your account have been confirmed.'))
 
-            return redirect('authentications:home')
+            return redirect('home')
         else:
             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('authentications:home')
+            return redirect('home')
 
+
+# class LogoutView(LoginRequiredMixin, View):
+#     def get(self, request):
+#         logout(request)
+#         messages.success(request, 'you logged out successfully', 'success')
+#         return redirect('authentications:login')
 
 def logout(request):
     # logout(request)
