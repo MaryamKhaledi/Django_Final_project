@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %} Detail email {% endblock %}
+{% block content %}
+    <p>from : {{ email.user }}</p>
+    <p>cc : {{ email.cc }}</p>
+    <p>subject : {{ email.subject }}</p>
+    <p>body : {{ email.body }}</p>
+    <p>file : {{ email.file }}</p>
+    <p>signature : {{ email.signature }}</p>
+    <p>time : {{ email.timestamp }}
+    {% with replies=email.user %}
+    <button type="submit"><a href="{% url 'mail_page:reply' replies %}">Reply</a></button>
+    {% endwith %}
+{% endblock %}

@@ -10,7 +10,14 @@ class ComposeForm(forms.ModelForm):
         fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file']
 
 
-class ReplyEmailForm(forms.ModelForm):
+class ReplyForm(forms.ModelForm):
     class Meta:
         model = Email
-        fields = ['receiver']
+        fields = ('body', 'file')
+        widgets = {
+            'body': forms.Textarea(attrs={'class': 'form-control'})
+        }
+
+
+class SearchForm(forms.Form):
+    search = forms.CharField()

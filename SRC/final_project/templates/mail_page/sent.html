@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Sent {% endblock %}
 {% block content %}
-    {% for email in all_emails %}
+    {% for email in sent %}
         <p>{{ email.receiver }}</p>
         {% if email.subject %}
             <p>{{ email.subject }}</p>
@@ -9,11 +9,11 @@
             <p>No subject</p>
         {% endif %}
         {% if email.body %}
-            <p>{{ email.body|truncatewords:30 }}</p>
+            <p>{{ email.body|truncatewords:8 }}</p>
         {% else %}
             <p></p>
         {% endif %}
         <p>{{ email.timestamp }}</p>
-        <button type="submit" style="color: #19A68C"><a href="{% url 'sent_detail' email.id %}"></a>detail</button>
+        <button type="submit" style="color: #19A68C"><a href="{% url 'mail_page:sent' %}"></a>detail</button>
     {% endfor %}
 {% endblock %}

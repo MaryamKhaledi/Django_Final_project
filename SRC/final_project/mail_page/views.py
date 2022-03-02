@@ -1,15 +1,16 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
+from django.views.generic import DetailView
 from accounts.models import User
-from .forms import ComposeForm
+from .forms import ComposeForm, ReplyForm
 from .models import Email
 
 
 def home(request):
-    return HttpResponseRedirect(f'You are welcome')
+    return render(request, 'mail_page/home.html')
 
 
 class ComposeEmail(LoginRequiredMixin, View):
@@ -72,13 +73,85 @@ class Inbox(LoginRequiredMixin, View):
         username_mail_bcc = Email.objects.filter(bcc=username).values()
         received_mail_cc = received.union(username_mail_cc)
         all_cc_emails = received_mail_cc.union(received_mail_cc)
-        return render(request, 'mail_page/inbox.html',
+        return render(request, 'mail_page/home.html',
                       {'username': username, 'all_emails': received, 'all_cc_emails': all_cc_emails,
                        'all_bcc_emails': username_mail_bcc})
 
 
-class SentEmail(View, LoginRequiredMixin):
-    def get(self, request, pk):
-        username = User.objects.get(pk=pk)
-        sent = Email.objects.filter(signature=username).values()
+# class ReplyView(LoginRequiredMixin, View):
+#     form_class = ReplyForm
+#
+#     def post(self, request, email_id):
+#         email = get_object_or_404(Email, id=email_id)
+#         form = self.form_class(request.POST)
+#         if form.is_valid():
+#             reply = form.save(commit=False)
+#             reply.user = request.user
+#             reply.reply = email
+#             reply.is_reply = True
+#             reply.save()
+#             messages.success(request, 'your reply submitted successfully', 'success')
+#         return redirect('home', email.id)
+
+
+class SentEmail(LoginRequiredMixin, View):
+    def get(self, request):
+        username = request.user
+        sent = Email.objects.filter(user=username)
         return render(request, 'mail_page/sent.html', {'sent': sent})
+
+
+class DetailEmail(View):
+    def get(self, request, id):
+        email = Email.objects.get(pk=id)
+        # global indexemailid
+        # indexemailid = email.id
+        return render(request, 'mail_page/detail.html', {'email': email})
+
+
+# class ReplyEmail(View):
+#     form_class = ReplyForm
+#
+#     def get(self, request, email_id):
+#         form = self.form_class
+#         return render(request, 'mail_page/reply.html', {'form': form})
+#
+#     def post(self, request, email_id):
+#         form = self.form_class(request.POST, request.FILES)
+#         if form.is_valid():
+#             reply_email = form.save(commit=False)
+#             # reply_email.resiver = indexemailid.user
+#             sent = Email.objects.filter(id=email_id)
+#             reply_email.user = request.user.username
+#             reply_email.receiver = sent.user
+#             reply_email.save()
+#             messages.success(request, 'your reply email submitted successfully', 'success')
+#             return render(request, 'mail_page/reply.html', {'form': form})
+
+
+def reply_email(request, email_user):
+    # sent = Email.objects.get(id=email_id)
+    if request.method == 'POST':
+        form = ReplyForm(request.POST, request.FILES)
+        if form.is_valid():
+            reply_email = form.save(commit=False)
+            reply_email.user = request.user
+            reply_email.receiver = email_user
+            reply_email.save()
+            messages.success(request, 'your reply email submitted successfully', 'success')
+            return redirect('mail_page:home')
+    else:
+        form = ReplyForm()
+
+    return render(request, 'mail_page/reply.html', {'form': form})
+
+# @method_decorator(login_required)
+# def post(self, request, *args, **kwargs):
+#     form = self.form_class(request.POST)
+#     if form.is_valid():
+#         new_comment = form.save(commit=False)
+#         new_comment.user = request.user
+#         new_comment.post = self.post_instance
+#         new_comment.save()
+#         messages.success(request, 'your comment submitted successfully', 'success')
+#         return redirect('home:post_detail', self.post_instance.id, self.post_instance.slug)

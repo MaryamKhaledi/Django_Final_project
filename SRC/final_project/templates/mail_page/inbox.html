@@ -1,10 +1,22 @@
-{% extends 'base.html' %}
-{% block title %} Inbox {% endblock %}
-{% block content %}
-    {% for email in all_emails %}
-        <p>{{ email.user.username }}</p>
-        <p>{{ email.subject }}</p>
-        <p>{{ email.body|truncatewords:30 }}</p>
-        <p>{{ email.timestamp }}</p>
-    {% endfor %}
-{% endblock %}
+{% for email in all_emails %}
+    <a href="{% url 'mail_page:detail' email.id  %}">
+        <ul class="message-list">
+            <li class="unread">
+                <div class="col col-1"><span class="dot"></span>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="chk1">
+                        <label for="chk1" class="toggle"></label>
+                    </div>
+                    <p class="title">{{ email.user.username }}</p><span
+                            class="star-toggle glyphicon glyphicon-star-empty"></span>
+                </div>
+                <div class="col col-2">
+                    <div class="subject">{{ email.subject }}
+                        &nbsp;&ndash;<span class="teaser">{{ email.body|truncatewords:8 }}</span>
+                    </div>
+                    <div class="date">{{ email.timestamp }}</div>
+                </div>
+            </li>
+        </ul>
+    </a>
+{% endfor %}

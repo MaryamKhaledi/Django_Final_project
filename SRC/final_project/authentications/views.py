@@ -28,7 +28,7 @@ class LoginView(View):
             user_login = User.objects.get(username=username)
             if user.is_active:
                 login(request, user)
-                return redirect('mail_page:compose')
+                return redirect('mail_page:inbox')
             else:
                 return render(request, 'authentications/login.html',
                               messages.error(request, f"{request.POST.get('username')} is not active"))

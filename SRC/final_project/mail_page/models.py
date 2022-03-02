@@ -46,6 +46,10 @@ class Contacts(models.Model):
 
 class Email(models.Model):
     """ Email class and its fields """
+    STATUS_CHOICES = (
+        ('draft', 'Draft'),
+        ('send', 'Send')
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     signature = models.ForeignKey(Signature, on_delete=models.PROTECT, related_name="signature",
                                   blank=True, null=True)
@@ -63,9 +67,11 @@ class Email(models.Model):
     file = models.FileField(upload_to='', validators=[file_size], blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # زمان ارسال ایمیل
     is_read = models.BooleanField(default=False, )  # فیلد read هم مربوط به این هستش آیا اون ایمیل خونده شده یا نه؟
-    # replay = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
+    reply = models.ForeignKey('self', on_delete=models.CASCADE, related_name='remail', blank=True, null=True)
+    is_reply = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False, blank=True, null=True)
     is_trash = models.BooleanField(default=False, blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
 
     # فیلد archived هم مربوط به این هستش که آیا کاربر اون ایمیل رو آرشیو کرده یا نه.
 
