@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from accounts.models import User, valid_phone_number
+from accounts.models import User
 from django.utils.translation import ugettext as _
 
 
@@ -34,10 +34,9 @@ class Contacts(models.Model):
     """ Add people as contacts """
     name = models.CharField(max_length=50)
     email = models.CharField(max_length=60)
-    phon_number = models.CharField(max_length=13, unique=True, validators=[valid_phone_number], blank=True, null=True,
+    phon_number = models.CharField(max_length=13, blank=True, null=True,
                                    help_text=_('The number of characters entered must be at least 12 and at most 13 '
-                                               'digits and must start with +.'),
-                                   error_messages={"The mobile number is incorrect"})
+                                               'digits and must start with +.'))
     birth_date = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contacts_owner")
 

@@ -41,8 +41,7 @@ class User(AbstractUser):
     email = models.CharField(unique=True, max_length=50, blank=True, null=True)
     phone_number = models.CharField(max_length=13, unique=True, validators=[valid_phone_number], blank=True, null=True,
                                     help_text=_('The number of characters entered must be at least 12 and at most 13 '
-                                                'digits and must start with +.'),
-                                    error_messages={"The mobile number is incorrect"})
+                                                'digits and must start with +.'))
     birth_date = models.DateTimeField(blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
     country = models.CharField(max_length=40, blank=True, null=True)
