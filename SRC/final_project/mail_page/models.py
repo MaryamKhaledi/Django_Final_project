@@ -1,16 +1,18 @@
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django.db import models
-from accounts.models import User
+from accounts.models import User, valid_phone_number
+from django.utils.translation import ugettext as _
 
 
-def file_size(value):  # add this to some file where you can import it from
+def file_size(value):
+    """ Check the accuracy of the uploaded file size """
     limit = 26214400  # 20971520+5342880
     if value.size > limit:
         raise ValidationError('File too large. Size should not exceed 25 MiB.')
 
 
 class Label(models.Model):
+    """ Emails can be categorized by label """
     title = models.CharField(
         max_length=30, blank=True, null=True
     )
@@ -20,7 +22,8 @@ class Label(models.Model):
 
 
 class Signature(models.Model):
-    user = models.OneToOneField(User, on_delete=models.PROTECT, max_length=60)
+    """Add name in the email sent """
+    user = models.OneToOneField(User, on_delete=models.PROTECT, max_length=50)
     is_send = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
@@ -28,10 +31,14 @@ class Signature(models.Model):
 
 
 class Contacts(models.Model):
-    name = models.CharField(max_length=60)
+    """ Add people as contacts """
+    name = models.CharField(max_length=50)
     email = models.CharField(max_length=60)
-    phon_number = models.CharField(max_length=11, blank=True, null=True)
-    birth_date = models.DateTimeField(null=True, )
+    phon_number = models.CharField(max_length=13, unique=True, validators=[valid_phone_number], blank=True, null=True,
+                                   help_text=_('The number of characters entered must be at least 12 and at most 13 '
+                                               'digits and must start with +.'),
+                                   error_messages={"The mobile number is incorrect"})
+    birth_date = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contacts_owner")
 
     def __str__(self):
@@ -39,14 +46,18 @@ class Contacts(models.Model):
 
 
 class Email(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    """ Email class and its fields """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     signature = models.ForeignKey(Signature, on_delete=models.PROTECT, related_name="signature",
                                   blank=True, null=True)
     # contacts = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True,
     #                              related_name="contacts")
-    receiver = models.ManyToManyField(User, related_name="receiver")
-    cc = models.ManyToManyField(User, related_name="cc", blank=True)
-    bcc = models.ManyToManyField(User, related_name="bcc", blank=True)
+    # receiver = models.ManyToManyField(User, related_name="receiver")
+    receiver = models.CharField(max_length=50, help_text=_('username@eml.com'))
+    # cc = models.ManyToManyField(User, related_name="cc", blank=True)
+    cc = models.CharField(max_length=500, null=True, blank=True)
+    # bcc = models.ManyToManyField(User, related_name="bcc", blank=True)
+    bcc = models.CharField(max_length=500, null=True, blank=True)
     subject = models.CharField(max_length=100, blank=True, null=True)
     label = models.ManyToManyField(Label, blank=True, )
     body = models.TextField(blank=True, null=True)

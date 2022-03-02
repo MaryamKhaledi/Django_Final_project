@@ -124,7 +124,7 @@ class ActivateAccount(View):
 #     def get(self, request):
 #         logout(request)
 #         messages.success(request, 'you logged out successfully', 'success')
-#         return redirect('authentications:login')
+#         return redirect('login')
 
 def logout(request):
     # logout(request)

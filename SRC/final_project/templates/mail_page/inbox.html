@@ -2,7 +2,7 @@
 {% block title %} Inbox {% endblock %}
 {% block content %}
     {% for email in all_emails %}
-        <p>{{ email.username }}</p>
+        <p>{{ email.user.username }}</p>
         <p>{{ email.subject }}</p>
         <p>{{ email.body|truncatewords:30 }}</p>
         <p>{{ email.timestamp }}</p>
