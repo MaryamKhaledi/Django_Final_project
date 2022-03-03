@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %} Show Labels {% endblock %}
+{% block content %}
+    {% for label in labels %}
+{#        {% with replies=contact.id %}#}
+{#            <a href="{% url 'mail_page:labelshowemail' replies %}">#}
+                <p><a href="{% url 'mail_page:labelsemail' %}">{{ label.title }}</a></p>
+{#            </a>#}
+{#        {% endwith %}#}
+    {% endfor %}
+{% endblock %}
