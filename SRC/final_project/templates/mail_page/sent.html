@@ -14,6 +14,9 @@
             <p></p>
         {% endif %}
         <p>{{ email.timestamp }}</p>
-        <button type="submit" style="color: #19A68C"><a href="{% url 'mail_page:sent' %}"></a>detail</button>
+        {% with detail=email.id %}
+            <button type="submit" style="color: #19A68C"><a href="{% url 'mail_page:detail' detail %}">detail</a>
+            </button>
+        {% endwith %}
     {% endfor %}
 {% endblock %}

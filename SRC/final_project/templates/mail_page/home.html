@@ -10,6 +10,7 @@
 <body>
 <aside id="sidebar" class="nano">
     <div class="nano-content">
+        <div>{{ username }}</div>
         <div class="logo-container">Mail</div>
         <a href="{% url 'mail_page:compose' %}" class="compose-button">Compose</a>
         <menu class="menu-segment">
@@ -24,7 +25,8 @@
         <div class="separator"></div>
         <div class="menu-segment">
             <ul class="labels">
-                <li class="title">Labels <span class="icon">+</span></li>
+                <li class="title"><a href="{% url 'mail_page:showlabel' %}">Labels</a>
+                    <span class="icon"></span><a href="{% url 'mail_page:newlabel' %}">+</a></li>
                 <li><a href="#">Dribbble <span class="ball pink"></span></a></li>
                 <li><a href="#">Roommates <span class="ball green"></span></a></li>
                 <li><a href="#">Bills <span class="ball blue"></span></a></li>
@@ -33,7 +35,8 @@
         <div class="separator"></div>
         <div class="menu-segment">
             <ul class="chat">
-                <li class="title">Chat <span class="icon">+</span></li>
+                <li class="title"><a href="{% url 'mail_page:showcontacts' %}">Contacts</a>
+                    <span class="icon"></span><a href="{% url 'mail_page:newcontacts' %}">+</a></li>
                 <li><a href="#"><span class="ball green"></span>Laura Turner</a></li>
                 <li><a href="#"><span class="ball green"></span>Kevin Jones</a></li>
                 <li><a href="#"><span class="ball blue"></span>John King</a></li>

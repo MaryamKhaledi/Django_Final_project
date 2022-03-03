@@ -1,5 +1,5 @@
 from django import forms
-from .models import Email
+from .models import Email, Contacts, Label
 
 
 class ComposeForm(forms.ModelForm):
@@ -17,6 +17,22 @@ class ReplyForm(forms.ModelForm):
         widgets = {
             'body': forms.Textarea(attrs={'class': 'form-control'})
         }
+
+
+class NewContactForm(forms.ModelForm):
+    """Form for the new contact model"""
+
+    class Meta:
+        model = Contacts
+        fields = ['name', 'email', 'phone_number', 'birth_date']
+
+
+class NewLabelForm(forms.ModelForm):
+    """Form for the new label model"""
+
+    class Meta:
+        model = Label
+        fields = ['title']
 
 
 class SearchForm(forms.Form):

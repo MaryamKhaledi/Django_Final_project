@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
-from django.db import models
-from accounts.models import User
+from taggit.managers import TaggableManager
+
+from accounts.models import User, valid_phone_number
 from django.utils.translation import ugettext as _
+from django.db import models
 
 
 def file_size(value):
@@ -13,9 +15,8 @@ def file_size(value):
 
 class Label(models.Model):
     """ Emails can be categorized by label """
-    title = models.CharField(
-        max_length=30, blank=True, null=True
-    )
+    title = models.CharField(max_length=30, unique=True, blank=True, null=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="label_owner")
 
     def __str__(self):
         return self.title
@@ -34,9 +35,9 @@ class Contacts(models.Model):
     """ Add people as contacts """
     name = models.CharField(max_length=50)
     email = models.CharField(max_length=60)
-    phon_number = models.CharField(max_length=13, blank=True, null=True,
-                                   help_text=_('The number of characters entered must be at least 12 and at most 13 '
-                                               'digits and must start with +.'))
+    phone_number = models.CharField(max_length=13, blank=True, null=True, validators=[valid_phone_number],
+                                    help_text=_('The number of characters entered must be at least 12 and at most 13 '
+                                                'digits and must start with +.'))
     birth_date = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contacts_owner")
 
@@ -72,6 +73,7 @@ class Email(models.Model):
     is_archived = models.BooleanField(default=False, blank=True, null=True)
     is_trash = models.BooleanField(default=False, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    tags = TaggableManager()
 
     # فیلد archived هم مربوط به این هستش که آیا کاربر اون ایمیل رو آرشیو کرده یا نه.
 

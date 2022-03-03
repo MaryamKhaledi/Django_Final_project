@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %} Show contacts {% endblock %}
+{% block content %}
+    {% for contact in contacts %}
+        {% with replies=contact.id %}
+            <a href="{% url 'mail_page:detailcontacts' replies %}">
+                <p>{{ contact.name }}</p>
+                <p>{{ contact.email }}</p>
+            </a>
+        {% endwith %}
+    {% endfor %}
+{% endblock %}

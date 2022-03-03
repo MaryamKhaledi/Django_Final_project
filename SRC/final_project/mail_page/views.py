@@ -1,12 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from django.views.generic import DetailView
 from accounts.models import User
-from .forms import ComposeForm, ReplyForm
-from .models import Email
+from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm
+from .models import Email, Contacts, Label
 
 
 def home(request):
@@ -27,6 +25,7 @@ class ComposeEmail(LoginRequiredMixin, View):
             cd = form.cleaned_data
             new_email = form.save(commit=False)
             # new_email.user = request.user
+            new_email.receiver = get_object_or_404(User, username=cd['receiver'])
             user = User.objects.get(id=request.user.id)
             new_email.user = user
             # rcv = Email.objects.filter(receiver__name__in=receiver)
@@ -145,6 +144,7 @@ def reply_email(request, email_user):
 
     return render(request, 'mail_page/reply.html', {'form': form})
 
+
 # @method_decorator(login_required)
 # def post(self, request, *args, **kwargs):
 #     form = self.form_class(request.POST)
@@ -155,3 +155,128 @@ def reply_email(request, email_user):
 #         new_comment.save()
 #         messages.success(request, 'your comment submitted successfully', 'success')
 #         return redirect('home:post_detail', self.post_instance.id, self.post_instance.slug)
+
+
+class ShowContacts(LoginRequiredMixin, View):
+    def get(self, request):
+        owner = request.user  # this is email username
+        print('****', owner)
+        contacts = Contacts.objects.filter(owner=owner)
+        return render(request, 'mail_page/showcontacts.html', {'contacts': contacts})
+
+
+class NewContacts(LoginRequiredMixin, View):
+    """New email compose class"""
+    form_class = NewContactForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class
+        return render(request, 'mail_page/newcontact.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            newcontact = form.save(commit=False)
+            cd = form.cleaned_data
+            email = get_object_or_404(User, username=cd['email'])
+            # new_contact.user = user
+            # rcv = Email.objects.filter(receiver__name__in=receiver)
+            owner = request.user
+            # Contacts.objects.create(name=cd['name'], email=cd['email'], phone_number=cd['phone_number'],
+            # birth_date=cd['birth_date'])
+            newcontact.owner = owner
+            form.save()
+            messages.success(request, 'you created a new email', 'success')
+            return redirect('mail_page:showcontacts')
+        return render(request, 'mail_page/newcontact.html', {'form': form})
+
+
+class DetailContacts(View):
+    def get(self, request, id):
+        contact = Contacts.objects.get(pk=id)
+        return render(request, 'mail_page/detailcantacts.html', {'contact': contact})
+
+
+class DeleteContacts(LoginRequiredMixin, View):
+    def get(self, request, id):
+        contact = get_object_or_404(Contacts, pk=id)
+        if contact.owner == request.user:
+            contact.delete()
+            messages.success(request, 'contact deleted successfully', 'success')
+        else:
+            messages.error(request, 'you cant delete this contact', 'danger')
+        return redirect('mail_page:showcontacts')
+
+
+class UpdateContacts(LoginRequiredMixin, View):
+    form_class = NewContactForm
+
+    def setup(self, request, *args, **kwargs):
+        self.contact_instance = get_object_or_404(Contacts, pk=kwargs['id'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        contact = self.contact_instance
+        if not contact.owner == request.user:
+            messages.error(request, 'you cant update this contact', 'danger')
+            return redirect('mail_page:showcontacts')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        contact = self.contact_instance
+        form = self.form_class(instance=contact)
+        return render(request, 'mail_page/newcontact.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        contact = self.contact_instance
+        form = self.form_class(request.POST, instance=contact)
+        if form.is_valid():
+            new_contact = form.save(commit=False)
+            cd = form.cleaned_data
+            email = get_object_or_404(User, username=cd['email'])
+            owner = request.user
+            new_contact.owner = owner
+            new_contact.save()
+            messages.success(request, 'you updated this post', 'success')
+            return redirect('mail_page:detailcontacts', contact.id)
+
+
+class NewLabel(LoginRequiredMixin, View):
+    """New email compose class"""
+    form_class = NewLabelForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class
+        return render(request, 'mail_page/newlabel.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            newlabel = form.save(commit=False)
+            cd = form.cleaned_data
+            # email = get_object_or_404(User, username=cd['email'])
+            # new_contact.user = user
+            # rcv = Email.objects.filter(receiver__name__in=receiver)
+            owner = request.user
+            # Contacts.objects.create(name=cd['name'], email=cd['email'], phon_number=cd['phon_number'],
+            # birth_date=cd['birth_date'])
+            newlabel.owner = owner
+            form.save()
+            messages.success(request, 'you created a new label', 'success')
+            return redirect('mail_page:showlabel')
+        return render(request, 'mail_page/newlabel.html', {'form': form})
+
+
+class ShowLabel(LoginRequiredMixin, View):
+    def get(self, request):
+        owner = request.user  # this is username
+        label = request.label
+        labelid = label.id
+        print('*****', owner)
+        print('*****', owner.id)
+        labels = Label.objects.filter(owner=owner)
+        return render(request, 'mail_page/showlabel.html', {'labelid': labelid, 'labels': labels})
+
+
+class LabelEmail():
+    pass

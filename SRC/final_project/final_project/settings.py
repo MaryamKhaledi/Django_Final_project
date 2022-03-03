@@ -25,8 +25,10 @@ SECRET_KEY = 'django-insecure-p(_$ek6ptnn!-0nyzw_r3rlivo_ilg&l-5et@=c-v+eazrfpi^
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# DEBUG = False
 
 ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     'authentications',
     'mail_page',
     'accounts',
+    'taggit',
 ]
 
 MIDDLEWARE = [
