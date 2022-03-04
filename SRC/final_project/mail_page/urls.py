@@ -17,4 +17,5 @@ urlpatterns = [
     path('updatecontacts/<int:id>', views.UpdateContacts.as_view(), name='updatecontacts'),
     path('newlabel/', views.NewLabel.as_view(), name='newlabel'),
     path('showlabel/', views.ShowLabel.as_view(), name='showlabel'),
+    # path('showlabel/', views.LabelsEmail.as_view(), name='labelsemail'),
 ]

@@ -18,6 +18,8 @@ class Label(models.Model):
     title = models.CharField(max_length=30, unique=True, blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="label_owner")
 
+    # todo : add unique_together
+
     def __str__(self):
         return self.title
 

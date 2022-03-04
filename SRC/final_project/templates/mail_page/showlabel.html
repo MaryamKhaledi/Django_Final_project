@@ -4,7 +4,8 @@
     {% for label in labels %}
 {#        {% with replies=contact.id %}#}
 {#            <a href="{% url 'mail_page:labelshowemail' replies %}">#}
-                <p><a href="{% url 'mail_page:labelsemail' %}">{{ label.title }}</a></p>
+{#                <p><a href="{% url 'mail_page:labelsemail' %}">{{ label.title }}</a></p>#}
+                <p>{{ label.title }}</p>
 {#            </a>#}
 {#        {% endwith %}#}
     {% endfor %}

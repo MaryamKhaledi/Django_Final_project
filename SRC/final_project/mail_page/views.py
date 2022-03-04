@@ -270,12 +270,12 @@ class NewLabel(LoginRequiredMixin, View):
 class ShowLabel(LoginRequiredMixin, View):
     def get(self, request):
         owner = request.user  # this is username
-        label = request.label
-        labelid = label.id
-        print('*****', owner)
-        print('*****', owner.id)
+        # label = request.label
+        # labelid = label.id
+        # print('*****', owner)
+        # print('*****', owner.id)
         labels = Label.objects.filter(owner=owner)
-        return render(request, 'mail_page/showlabel.html', {'labelid': labelid, 'labels': labels})
+        return render(request, 'mail_page/showlabel.html', {'labels': labels})
 
 
 class LabelEmail():
