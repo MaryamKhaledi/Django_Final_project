@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from accounts.models import User
@@ -14,6 +15,7 @@ def home(request):
     return render(request, 'mail_page/home.html')
 
 
+# todo : add show file
 class ComposeEmail(LoginRequiredMixin, View):
     """New email compose class"""
     form_class = ComposeForm
@@ -178,26 +180,41 @@ class NewContacts(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        print(form.data)
+        print("1..2..3")
+        print(form.errors)
         if form.is_valid():
             newcontact = form.save(commit=False)
             cd = form.cleaned_data
-            email = get_object_or_404(User, username=cd['email'])
-            # new_contact.user = user
-            # rcv = Email.objects.filter(receiver__name__in=receiver)
-            owner = request.user
-            # Contacts.objects.create(name=cd['name'], email=cd['email'], phone_number=cd['phone_number'],
-            # birth_date=cd['birth_date'])
-            newcontact.owner = owner
-            form.save()
-            messages.success(request, 'you created a new email', 'success')
-            return redirect('mail_page:showcontacts')
-        return render(request, 'mail_page/newcontact.html', {'form': form})
+            print("ghhhh")
+
+            try:
+                # noinspection PyBroadException
+                email = get_object_or_404(User, username=cd['email'])
+                # new_contact.user = user
+                # rcv = Email.objects.filter(receiver__name__in=receiver)
+                owner = request.user
+                # Contacts.objects.create(name=cd['name'], email=cd['email'], phone_number=cd['phone_number'],
+                # birth_date=cd['birth_date'])
+                newcontact.owner = owner
+                form.save()
+                messages.success(request, f'You Add {cd["name"]} in your contact', 'success')
+
+                # messages.error(request, 'Form is not valid', 'error')
+            except :
+                return HttpResponse('boro kodet ro dorost con ')
+
+        else:
+            print("else...")
+
+            # return render(request, 'mail_page/home.html', {'form': form})
+            # return redirect('mail_page:showcontacts')
 
 
 class DetailContacts(View):
     def get(self, request, id):
         contact = Contacts.objects.get(pk=id)
-        return render(request, 'mail_page/detailcantacts.html', {'contact': contact})
+        return render(request, 'mail_page/detailcontacts.html', {'contact': contact})
 
 
 class DeleteContacts(LoginRequiredMixin, View):

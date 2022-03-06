@@ -20,7 +20,6 @@ class Label(models.Model):
     title = models.CharField(max_length=30, blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="label_owner")
 
-    # todo : add unique_together
     class Meta:
         unique_together = ['title', 'owner']
 
@@ -44,6 +43,7 @@ class Contacts(models.Model):
     phone_number = models.CharField(max_length=13, blank=True, null=True, validators=[valid_phone_number],
                                     help_text=_('The number of characters entered must be at least 12 and at most 13 '
                                                 'digits and must start with +.'))
+    other_email = models.CharField(max_length=60, blank=True, null=True)
     birth_date = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contacts_owner")
 
@@ -71,7 +71,7 @@ class Email(models.Model):
     subject = models.CharField(max_length=100, blank=True, null=True)
     label = models.ManyToManyField(Label, blank=True, )
     body = models.TextField(blank=True, null=True)
-    file = models.FileField(upload_to='', validators=[file_size], blank=True, null=True)
+    file = models.FileField(upload_to='documents/%Y/%m/%d/', validators=[file_size], blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # زمان ارسال ایمیل
     is_read = models.BooleanField(default=False, )  # فیلد read هم مربوط به این هستش آیا اون ایمیل خونده شده یا نه؟
     reply = models.ForeignKey('self', on_delete=models.CASCADE, related_name='remail', blank=True, null=True)

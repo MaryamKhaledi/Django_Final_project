@@ -146,3 +146,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # ucmbpbzermzbwpkb
 DEFAULT_FROM_EMAIL = 'send by Maryam website'
+
+# ..............upload file .............
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

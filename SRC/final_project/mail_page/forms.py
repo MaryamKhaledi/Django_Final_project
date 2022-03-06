@@ -19,12 +19,20 @@ class ReplyForm(forms.ModelForm):
         }
 
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
 class NewContactForm(forms.ModelForm):
     """Form for the new contact model"""
 
     class Meta:
         model = Contacts
-        fields = ['name', 'email', 'phone_number', 'birth_date']
+        fields = ['name', 'email', 'phone_number', 'other_email', 'birth_date']
+
+        widgets = {
+            'birthdate': DateInput(),
+        }
 
 
 class NewLabelForm(forms.ModelForm):

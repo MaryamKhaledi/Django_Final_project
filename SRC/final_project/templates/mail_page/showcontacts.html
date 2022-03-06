@@ -3,9 +3,12 @@
 {% block content %}
     {% for contact in contacts %}
         {% with replies=contact.id %}
+
             <a href="{% url 'mail_page:detailcontacts' replies %}">
-                <p>{{ contact.name }}</p>
-                <p>{{ contact.email }}</p>
+                <div>
+                    <p>{{ contact.name }}</p>
+                    <small>{{ contact.email }}</small>
+                </div>
             </a>
         {% endwith %}
     {% endfor %}

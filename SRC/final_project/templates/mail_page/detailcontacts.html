@@ -6,7 +6,9 @@
     <p>{{ contact.phone_number }}</p>
     <p>{{ contact.birth_date }} </p>
     {% with replies=contact.id %}
-    <button type="submit"><a href="{% url 'mail_page:deletecontacts' replies %}">Delete</a></button>
-    <button type="submit"><a href="{% url 'mail_page:updatecontacts' replies %}">Update</a></button>
+        <br><br>
+    <button type="submit"><a href="{% url 'mail_page:deletecontacts' replies %}">Update</a></button>
+    <button type="submit"><a href="{% url 'mail_page:updatecontacts' replies %}">Delete</a></button>
+{#    <button type="submit"><a href="{% url 'mail_page:compose' replies %}">Send email</a></button>#}
     {% endwith %}
 {% endblock %}
