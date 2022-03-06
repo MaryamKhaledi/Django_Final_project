@@ -1,3 +1,5 @@
+from enum import unique
+
 from django.core.exceptions import ValidationError
 from taggit.managers import TaggableManager
 
@@ -15,10 +17,12 @@ def file_size(value):
 
 class Label(models.Model):
     """ Emails can be categorized by label """
-    title = models.CharField(max_length=30, unique=True, blank=True, null=True)
+    title = models.CharField(max_length=30, blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="label_owner")
 
     # todo : add unique_together
+    class Meta:
+        unique_together = ['title', 'owner']
 
     def __str__(self):
         return self.title
@@ -75,7 +79,8 @@ class Email(models.Model):
     is_archived = models.BooleanField(default=False, blank=True, null=True)
     is_trash = models.BooleanField(default=False, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-    tags = TaggableManager()
+
+    # tags = TaggableManager()
 
     # فیلد archived هم مربوط به این هستش که آیا کاربر اون ایمیل رو آرشیو کرده یا نه.
 

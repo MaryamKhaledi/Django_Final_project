@@ -7,6 +7,9 @@ from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm
 from .models import Email, Contacts, Label
 
 
+# User.objets.filter(Q(email__isnull=True)|Q(username__isnull=True))
+
+
 def home(request):
     return render(request, 'mail_page/home.html')
 
@@ -280,3 +283,93 @@ class ShowLabel(LoginRequiredMixin, View):
 
 class LabelEmail():
     pass
+
+# class UserContactView(LoginRequiredMixin, View):
+#     form_class = AddContact
+#     template_name = 'users/add_contact.html'
+#
+#     def get(self, request):
+#         form = self.form_class
+#         return render(request, self.template_name, {'forms': form})
+#
+#     def post(self, request):
+#         form = self.form_class(request.POST)
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             new_contact = form.save(commit=False)
+#             new_contact.owner_contact = request.user
+#             new_contact.save()
+#             messages.success(request, f'You Add {cd["name"]} in your contact', 'success')
+#             return redirect('email_view')
+#
+#
+# class ShowAllContact(LoginRequiredMixin, View):
+#     template = 'users/all_contact.html'
+#
+#     def get(self, request):
+#         all_contact = Contact.objects.filter(owner_contact=request.user.id)
+#         return render(request, self.template, {"all_contact": all_contact})
+#
+#
+# class DetailContactView(LoginRequiredMixin, View):
+#     template = 'users/detail_contact.html'
+#
+#     def setup(self, request, *args, **kwargs):
+#         self.email_instance = get_object_or_404(Contact, pk=kwargs['contact_id'])
+#         return super().setup(request, *args, **kwargs)
+#
+#     def get(self, request, contact_id):
+#         contact = Contact.objects.get(pk=contact_id)
+#         return render(request, self.template, {'contact': contact})
+#
+#
+# class Update(LoginRequiredMixin, View):
+#     form_class = AddContact
+#     template = 'users/update_contact.html'
+#
+#     def setup(self, request, *args, **kwargs):
+#         self.contact_instance = Contact.objects.get(pk=kwargs["contact_id"])
+#         return super().setup(request, *args, **kwargs)
+#
+#     # def dispatch(self, request, *args, **kwargs):
+#     #     conatct= self.contact_instance
+#     #     if not conatct.user.id == request.user.id:
+#     #         messages.error(request, 'you can not edit', 'danger')
+#     #         return redirect('home')
+#     #     return super().dispatch(request, *args, **kwargs)
+#
+#     def get(self, request, *args, **kwargs):
+#         conatct = self.contact_instance
+#         form = self.form_class(instance=conatct)
+#         return render(request, self.template, {'forms': form})
+#
+#     def post(self, request, *args, **kwargs):
+#         conatct = self.contact_instance
+#         form = self.form_class(request.POST, instance=conatct)
+#         if form.is_valid():
+#             update_conatct = form.save(commit=False)
+#             update_conatct.owner_contact = request.user
+#             update_conatct.save()
+#             messages.success(request, "updated post", 'success')
+#             return redirect('detail_contact', update_conatct.id)
+#
+#
+# class ContactDelete(LoginRequiredMixin, View):
+#     def get(self, request, contact_id):
+#         contact = Contact.objects.get(pk=contact_id)
+#         contact.delete()
+#         messages.success(request, "delete was successfully", 'success')
+#         return redirect('email_view')
+#
+#
+# def export_contact_csv(request):
+#     contacts = Contact.objects.filter(owner_contact=request.user)
+#     # return HttpResponse(contacts)
+#     response = HttpResponse('text/csv')
+#     response['Content-Disposition'] = 'attachment; filename=contacts.csv'
+#     writer = csv.writer(response)
+#     writer.writerow(['ID', 'owner_contact', 'phone', 'Name', 'Email', 'Birthdate'])
+#     studs = contacts.values_list('id', 'owner_contact', 'phone', 'name', 'email', 'birthdate')
+#     for std in studs:
+#         writer.writerow(std)
+#     return response
