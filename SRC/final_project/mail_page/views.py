@@ -1,3 +1,5 @@
+import csv
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
@@ -170,6 +172,20 @@ class ShowContacts(LoginRequiredMixin, View):
         return render(request, 'mail_page/showcontacts.html', {'contacts': contacts})
 
 
+#  todo : path for csv file
+def export_contact_csv(request):
+    contacts = Contacts.objects.filter(owner_contact=request.user)
+    # return HttpResponse(contacts)
+    response = HttpResponse('text/csv')
+    response['Content-Disposition'] = 'attachment; filename=contacts.csv'
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Name', 'Email', 'Phone_number', 'Other_email', 'Birth_date', 'owner'])
+    studs = contacts.values_list('id', 'name', 'email', 'phone_number', 'other_email', 'owner')
+    for std in studs:
+        writer.writerow(std)
+    return response
+
+
 class NewContacts(LoginRequiredMixin, View):
     """New email compose class"""
     form_class = NewContactForm
@@ -180,35 +196,20 @@ class NewContacts(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        print(form.data)
-        print("1..2..3")
-        print(form.errors)
         if form.is_valid():
             newcontact = form.save(commit=False)
             cd = form.cleaned_data
-            print("ghhhh")
-
             try:
                 # noinspection PyBroadException
                 email = get_object_or_404(User, username=cd['email'])
-                # new_contact.user = user
-                # rcv = Email.objects.filter(receiver__name__in=receiver)
                 owner = request.user
-                # Contacts.objects.create(name=cd['name'], email=cd['email'], phone_number=cd['phone_number'],
-                # birth_date=cd['birth_date'])
                 newcontact.owner = owner
                 form.save()
                 messages.success(request, f'You Add {cd["name"]} in your contact', 'success')
-
-                # messages.error(request, 'Form is not valid', 'error')
-            except :
+            except:
+                # todo : sms monaseb
                 return HttpResponse('boro kodet ro dorost con ')
-
-        else:
-            print("else...")
-
-            # return render(request, 'mail_page/home.html', {'form': form})
-            # return redirect('mail_page:showcontacts')
+        return redirect('mail_page:showcontacts')
 
 
 class DetailContacts(View):
@@ -219,12 +220,15 @@ class DetailContacts(View):
 
 class DeleteContacts(LoginRequiredMixin, View):
     def get(self, request, id):
-        contact = get_object_or_404(Contacts, pk=id)
-        if contact.owner == request.user:
-            contact.delete()
-            messages.success(request, 'contact deleted successfully', 'success')
-        else:
-            messages.error(request, 'you cant delete this contact', 'danger')
+        try:
+            contact = get_object_or_404(Contacts, pk=id)
+            if contact.owner == request.user:
+                contact.delete()
+                messages.success(request, 'contact deleted successfully', 'success')
+            else:
+                messages.error(request, 'you cant delete this contact', 'danger')
+        except:
+            pass
         return redirect('mail_page:showcontacts')
 
 
