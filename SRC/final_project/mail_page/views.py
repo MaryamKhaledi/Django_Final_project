@@ -163,6 +163,47 @@ def reply_email(request, email_user):
 #         messages.success(request, 'your comment submitted successfully', 'success')
 #         return redirect('home:post_detail', self.post_instance.id, self.post_instance.slug)
 
+#  todo : class emailcontact be dalile adam neshon dadane resiver be moshkel khord
+
+class EmailContact(LoginRequiredMixin, View):
+    form_class = ReplyForm
+
+    def get(self, request, id):
+        form = self.form_class
+        return render(request, 'mail_page/contactemail.html', {'form': form})
+
+    def post(self, request, id):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            contact_email = form.save(commit=False)
+            contact_object = Contacts.objects.filter(owner=request.user.id, pk=id)
+            contact_email.user = request.user
+            # cd = contact.email
+            contact_email.resiver = contact_object.email
+            contact_email.save()
+            messages.success(request, 'your email sent successfully', 'success')
+            return redirect('mail_page:showcontacts')
+
+        return render(request, 'mail_page/contactemail.html', {'form': form})
+
+
+def emailcontct(request, id):
+    if request.method == 'POST':
+        form = ReplyForm(request.POST, request.FILES)
+        if form.is_valid():
+            contact_email = form.save(commit=False)
+            contact_object = Contacts.objects.filter(pk=id)
+            print(contact_object.id)
+            contact_email.user = request.user
+            contact_email.receiver = contact_object.email
+            contact_email.save()
+            messages.success(request, 'your reply email submitted successfully', 'success')
+            return redirect('mail_page:home')
+    else:
+        form = ReplyForm()
+
+    return render(request, 'mail_page/reply.html', {'form': form})
+
 
 class ShowContacts(LoginRequiredMixin, View):
     def get(self, request):
@@ -257,6 +298,7 @@ class UpdateContacts(LoginRequiredMixin, View):
         if form.is_valid():
             new_contact = form.save(commit=False)
             cd = form.cleaned_data
+            #  todo
             email = get_object_or_404(User, username=cd['email'])
             owner = request.user
             new_contact.owner = owner

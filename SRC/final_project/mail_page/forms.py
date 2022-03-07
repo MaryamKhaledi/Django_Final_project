@@ -13,7 +13,7 @@ class ComposeForm(forms.ModelForm):
 class ReplyForm(forms.ModelForm):
     class Meta:
         model = Email
-        fields = ('body', 'file')
+        fields = ('subject', 'body', 'file')
         widgets = {
             'body': forms.Textarea(attrs={'class': 'form-control'})
         }
