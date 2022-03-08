@@ -1,15 +1,14 @@
 {% extends 'base.html' %}
 {% block title %} Detail contacts {% endblock %}
 {% block content %}
-<p>{{ contact.name }}</p>
-<p>{{ contact.email }}</p>
-<p>{{ contact.phone_number }}</p>
-<p>{{ contact.birth_date }} </p>
-{% with replies=contact.id %}
-    <br><br>
-    <button type="submit"><a href="{% url 'mail_page:updatecontacts' replies %}">Update</a></button>
-    <button type="submit"><a href="{% url 'mail_page:deletecontacts' replies %}">Delete</a></button>
-    <button type="submit"><a href="{% url 'mail_page:emailcontact' replies %}">Send email</a></button>
-
-{% endwith %}
+    <p>{{ contact.name }}</p>
+    <p>{{ contact.email }}</p>
+    <p>{{ contact.phone_number }}</p>
+    <p>{{ contact.birth_date }} </p>
+    {% with replies=contact.id %}
+        <br><br>
+        <button type="submit"><a href="{% url 'mail_page:updatecontacts' replies %}">Update</a></button>
+        <button type="submit"><a href="{% url 'mail_page:deletecontacts' replies %}">Delete</a></button>
+        <button type="submit"><a href="{% url 'mail_page:emailcontact' replies %}">Send email</a></button>
+    {% endwith %}
 {% endblock %}

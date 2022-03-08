@@ -5,10 +5,17 @@
     <p>cc : {{ email.cc }}</p>
     <p>subject : {{ email.subject }}</p>
     <p>body : {{ email.body }}</p>
-    <p>file : {{ email.file }}</p>
+    {#    <p>file : {{ email.file }}</p>#}
+    {% if email.file %}
+        <p class="view-message text-left"><span style="color: blue">attachment</span>
+            <a href="{{ email.file.url }}" class="fa fa-paperclip" style="color: black">File</a></p>
+    {% endif %}
     <p>signature : {{ email.signature }}</p>
     <p>time : {{ email.timestamp }}
-    {% with replies=email.user %}
-    <button type="submit"><a href="{% url 'mail_page:reply' replies %}">Reply</a></button>
-    {% endwith %}
+        {% with replies=email.user %}
+            <button type="submit"><a href="{% url 'mail_page:reply' replies %}">Reply</a></button>
+        {% endwith %}
+        {% with re=email.id %}
+            <button type="submit"><a href="{% url 'mail_page:trash' re %}">Trash</a></button>
+        {% endwith %}
 {% endblock %}

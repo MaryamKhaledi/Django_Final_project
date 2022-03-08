@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from utils import send_otp_code
@@ -49,30 +49,58 @@ class RegisterView(View):
     def post(self, request, *args, **kwargs):
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False  # Deactivate account till it is confirmed
-            user.save()
-            current_site = get_current_site(request)
-            subject = 'Activate Your MySite Account'
-            message = render_to_string('authentications/account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
-            user.email_user(subject, message)
-            messages.success(request, ('Please Confirm your email to complete registration.'))
-            return redirect('login')
-        else:
-            messages.error(request, 'register failed')
-            return redirect('logout')
+            if form.cleaned_data['email']:
+                user = form.save(commit=False)
+                user.is_active = False  # Deactivate account till it is confirmed
+                user.save()
+                current_site = get_current_site(request)
+                subject = 'Activate Your NOOB MESSENGER Account'
+                message = render_to_string('authentications/account_activation_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                })
+                user.email_user(subject, message)
+                messages.success(request, ('Please Confirm your email to complete registration.'))
+                return redirect('login')
+
+            elif form.cleaned_data['phone_number']:
+                random_code = random.randint(1000, 9999)
+                send_otp_code(form.cleaned_data['phone_number'], random_code)
+                OtpCode.objects.create(phone_number=form.cleaned_data['phone_number'], code=random_code)
+                request.session['user_registration_info'] = {
+                    'username': form.cleaned_data['username'],
+                    'phone_number': form.cleaned_data['phone_number'],
+                    'email': form.cleaned_data['email'],
+                    'first_name': form.cleaned_data['first_name'],
+                    'last_name': form.cleaned_data['last_name'],
+                    'country': form.cleaned_data['country'],
+                    'birth_date': form.cleaned_data['birth_date'],
+                    'password': form.cleaned_data['password'],
+                    'gender': form.cleaned_data['gender'],
+                }
+                messages.success(request, 'we sent you a code', 'success')
+                # todo: verify template
+                return redirect('verifycode')
+            return render(request, 'authentications/login.html', {'forms': form})
+
+        # else:
+        #     messages.error(request,
+        #                    f"You must be enter email or phone number!!!!",
+        #                    extra_tags='permanent error')
+        #     storage = messages.get_messages(request)
+        #     for message in storage:
+        #         print(message)
+        #     storage.used = False
+        #     return render(request, 'authentications/register.html', {"forms": form})
 
 
 class ActivateAccount(View):
 
     def get(self, request, uidb64, token, *args, **kwargs):
         try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
+            uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
@@ -90,6 +118,104 @@ class ActivateAccount(View):
         else:
             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
             return redirect('login')
+
+
+class UserRegisterVerifyCodeView(View):
+    form_class = VerifyCodeForm
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, 'authentications/verify.html', {'form': form})
+
+    def post(self, request):
+        user_session = request.session['user_registration_info']
+        code_instance = OtpCode.objects.get(phone_number=user_session['phone_number'])
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+
+            if cd['code'] == code_instance.code:
+                User.objects.create_user(password=user_session['password'],
+                                         username=user_session['username'],
+                                         phone_number=user_session['phone_number'],
+                                         first_name=user_session['first_name'],
+                                         last_name=user_session['last_name'],
+                                         birth_date=user_session['birth_date'],
+                                         gender=user_session['gender'],
+                                         country=user_session['country'])
+                # print('*********************************************************')
+                # print(user_session['username'])
+                # # print(CustomUser.objects.get(user_session['username']))
+                # print('filter', CustomUser.objects.filter(username=user_session['username']))
+                # print('*********************************************************')
+                user = User.objects.get(phone_number=user_session['phone_number'])
+                user.is_active = True
+                user.username += '@eml.com'
+                user.save()
+                # folders = ['inbox', 'sentbox', 'trash', 'draft']
+                # for folder in folders:
+                #     email_place_holder = EmailPlaceHolders()
+                #     email_place_holder.place_holder = folder
+                #     email_place_holder.save()
+                # CustomUser.save()
+
+                code_instance.delete()
+                messages.success(request, 'you registered.', 'success')
+                return redirect("login")
+            else:
+                messages.error(request, 'this code is wrong', 'danger')
+                return redirect('verifycode')
+
+
+# class RegisterView(View):
+#     def get(self, request, *args, **kwargs):
+#         form = RegisterForm()
+#         return render(request, 'authentications/register.html', {'form': form})
+#
+#     def post(self, request, *args, **kwargs):
+#         form = RegisterForm(request.POST)
+#         if form.is_valid():
+#             user = form.save(commit=False)
+#             user.is_active = False  # Deactivate account till it is confirmed
+#             user.save()
+#             current_site = get_current_site(request)
+#             subject = 'Activate Your MySite Account'
+#             message = render_to_string('authentications/account_activation_email.html', {
+#                 'user': user,
+#                 'domain': current_site.domain,
+#                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+#                 'token': account_activation_token.make_token(user),
+#             })
+#             user.email_user(subject, message)
+#             messages.success(request, ('Please Confirm your email to complete registration.'))
+#             return redirect('login')
+#         else:
+#             messages.error(request, 'register failed')
+#             return redirect('logout')
+
+
+# class ActivateAccount(View):
+#
+#     def get(self, request, uidb64, token, *args, **kwargs):
+#         try:
+#             uid = force_text(urlsafe_base64_decode(uidb64))
+#             user = User.objects.get(pk=uid)
+#         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+#             user = None
+#             print('ghabl as if')
+#         if user is not None and account_activation_token.check_token(user, token):
+#             print('ghabl as active')
+#             user.is_active = True
+#             user.username += '@eml.com'
+#             # user.profile.email_confirmed = True
+#             user.save()
+#             login(request, user)
+#             messages.success(request, ('Your account have been confirmed.'))
+#
+#             return redirect('login')
+#         else:
+#             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
+#             return redirect('login')
 
 
 def logout(request):

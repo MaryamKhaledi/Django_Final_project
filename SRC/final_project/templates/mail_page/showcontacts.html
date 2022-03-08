@@ -14,5 +14,6 @@
     {% endfor %}
     <br><br><br><br>
     <p>Download all contacts in csv format</p>
-    <button type="submit"><a href="#"></a>Download</button>
+{#    <button type="submit"><a href="{{ data.document.url }}" download="{{ data.document.url }} "></a>Download</button>#}
+    <button type="submit"><a href="{% url 'mail_page:contactscsv' %}">Download</a></button>
 {% endblock %}

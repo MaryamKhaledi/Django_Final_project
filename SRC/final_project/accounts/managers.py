@@ -10,7 +10,7 @@ class UserManager(BaseUserManager):
 
         if not username:
             raise ValueError('accounts must have email')
-        username = f'{username}@eml.com'
+        # username = f'{username}@eml.com'
         user = self.model(username=username, email=email, phone_number=phone_number, first_name=first_name,
                           last_name=last_name, birth_date=birth_date, gender=gender, country=country)
         user.set_password(password)

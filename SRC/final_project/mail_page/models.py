@@ -1,8 +1,6 @@
 from enum import unique
-
 from django.core.exceptions import ValidationError
 from taggit.managers import TaggableManager
-
 from accounts.models import User, valid_phone_number
 from django.utils.translation import ugettext as _
 from django.db import models

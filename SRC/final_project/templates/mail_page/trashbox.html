@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %} Trash {% endblock %}
+{% block content %}
+    {% for email in emails %}
+        <p>{{email.receiver}}<p>
+        <p>{{email.user}}<p>
+        <p>{{email.timestamp}}<p>
+        <p>{{ email.subject }}</p>
+    {% endfor %}
+{% endblock %}

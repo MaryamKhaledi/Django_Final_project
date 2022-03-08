@@ -1,5 +1,5 @@
 import csv
-
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
@@ -176,10 +176,9 @@ class EmailContact(LoginRequiredMixin, View):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             contact_email = form.save(commit=False)
-            contact_object = Contacts.objects.filter(owner=request.user.id, pk=id)
+            contact_object = Contacts.objects.get(pk=id, owner=request.user.id)
             contact_email.user = request.user
-            # cd = contact.email
-            contact_email.resiver = contact_object.email
+            contact_email.receiver = contact_object.email
             contact_email.save()
             messages.success(request, 'your email sent successfully', 'success')
             return redirect('mail_page:showcontacts')
@@ -187,22 +186,22 @@ class EmailContact(LoginRequiredMixin, View):
         return render(request, 'mail_page/contactemail.html', {'form': form})
 
 
-def emailcontct(request, id):
-    if request.method == 'POST':
-        form = ReplyForm(request.POST, request.FILES)
-        if form.is_valid():
-            contact_email = form.save(commit=False)
-            contact_object = Contacts.objects.filter(pk=id)
-            print(contact_object.id)
-            contact_email.user = request.user
-            contact_email.receiver = contact_object.email
-            contact_email.save()
-            messages.success(request, 'your reply email submitted successfully', 'success')
-            return redirect('mail_page:home')
-    else:
-        form = ReplyForm()
-
-    return render(request, 'mail_page/reply.html', {'form': form})
+# def emailcontct(request, id):
+#     if request.method == 'POST':
+#         form = ReplyForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             contact_email = form.save(commit=False)
+#             contact_object = Contacts.objects.get(pk=id)
+#             print(contact_object.id)
+#             contact_email.user = request.user
+#             contact_email.receiver = contact_object.email
+#             contact_email.save()
+#             messages.success(request, 'your reply email submitted successfully', 'success')
+#             return redirect('mail_page:home')
+#     else:
+#         form = ReplyForm()
+#
+#     return render(request, 'mail_page/reply.html', {'form': form})
 
 
 class ShowContacts(LoginRequiredMixin, View):
@@ -213,18 +212,29 @@ class ShowContacts(LoginRequiredMixin, View):
         return render(request, 'mail_page/showcontacts.html', {'contacts': contacts})
 
 
-#  todo : path for csv file
-def export_contact_csv(request):
-    contacts = Contacts.objects.filter(owner_contact=request.user)
-    # return HttpResponse(contacts)
-    response = HttpResponse('text/csv')
-    response['Content-Disposition'] = 'attachment; filename=contacts.csv'
+# @method_decorator(login_required)
+def contact_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=venues.csv'
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Name', 'Email', 'Phone_number', 'Other_email', 'Birth_date', 'owner'])
-    studs = contacts.values_list('id', 'name', 'email', 'phone_number', 'other_email', 'owner')
-    for std in studs:
-        writer.writerow(std)
+    allcontacts = Contacts.objects.filter(owner=request.user)
+    writer.writerow(['Name', 'Email', 'Phone_number', 'Other_email', 'Birth_date', 'Owner'])
+    for venue in allcontacts:
+        writer.writerow([venue.name, venue.email, venue.phone_number, venue.other_email, venue.birth_date, venue.owner])
     return response
+
+
+# def contact_csv(request):
+#     contacts = Contacts.objects.filter(owner=request.user)
+#     # return HttpResponse(contacts)
+#     response = HttpResponse('text/csv')
+#     response['Content-Disposition'] = 'attachment; filename=contacts.csv'
+#     writer = csv.writer(response)
+#     writer.writerow(['Name', 'Email', 'Phone_number', 'Other_email', 'Birth_date', 'owner'])
+#     studs = contacts.values_list('name', 'email', 'phone_number', 'other_email', 'owner')
+#     for std in studs:
+#         writer.writerow(std)
+#     return response
 
 
 class NewContacts(LoginRequiredMixin, View):
@@ -298,7 +308,6 @@ class UpdateContacts(LoginRequiredMixin, View):
         if form.is_valid():
             new_contact = form.save(commit=False)
             cd = form.cleaned_data
-            #  todo
             email = get_object_or_404(User, username=cd['email'])
             owner = request.user
             new_contact.owner = owner
@@ -346,6 +355,7 @@ class ShowLabel(LoginRequiredMixin, View):
 
 class LabelEmail():
     pass
+
 
 # class UserContactView(LoginRequiredMixin, View):
 #     form_class = AddContact
@@ -436,3 +446,21 @@ class LabelEmail():
 #     for std in studs:
 #         writer.writerow(std)
 #     return response
+
+class Trash(LoginRequiredMixin, View):
+    def get(self, request, id):
+        email = Email.objects.get(pk=id)
+        email.is_trash = True
+        print(email.is_trash)
+        email.save(update_fields=['is_trash'])
+        # email.update()
+        print(email.is_trash)
+        return redirect('mail_page:home')
+
+
+class TrashBox(LoginRequiredMixin, View):
+    def get(self, request):
+        username = request.user
+        emails = Email.objects.filter((Q(receiver=username) | Q(user=username)) & Q(is_trash=True))
+
+        return render(request, 'mail_page/trashbox.html', {'emails': emails})
