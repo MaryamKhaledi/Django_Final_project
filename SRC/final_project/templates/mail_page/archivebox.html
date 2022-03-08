@@ -7,7 +7,7 @@
         <p>timestamp : {{email.timestamp}}<p>
         <p>subject : {{ email.subject }}</p>
         {% with re=email.id %}
-            <button type="submit"><a href="{% url 'mail_page:trash' re %}">Undo</a></button>
+            <button type="submit"><a href="{% url 'mail_page:archive' re %}">Undo</a></button>
 {#            <button type="submit"><a href="{% url 'mail_page:deletetrash' re %}">Delete</a></button> #}
         {% endwith %}
     {% endfor %}

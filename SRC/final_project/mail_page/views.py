@@ -17,7 +17,6 @@ def home(request):
     return render(request, 'mail_page/home.html')
 
 
-# todo : add show file
 class ComposeEmail(LoginRequiredMixin, View):
     """New email compose class"""
     form_class = ComposeForm
@@ -74,7 +73,7 @@ class Inbox(LoginRequiredMixin, View):
         # username = User.objects.get(pk=userid)
         username = request.user.username
         print(username)
-        received = Email.objects.filter(receiver=username)
+        received = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(receiver=username))
         username_mail_cc = Email.objects.filter(cc=username).values()
         username_mail_bcc = Email.objects.filter(bcc=username).values()
         received_mail_cc = received.union(username_mail_cc)
@@ -103,7 +102,7 @@ class Inbox(LoginRequiredMixin, View):
 class SentEmail(LoginRequiredMixin, View):
     def get(self, request):
         username = request.user
-        sent = Email.objects.filter(user=username)
+        sent = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(user=username))
         return render(request, 'mail_page/sent.html', {'sent': sent})
 
 
@@ -450,11 +449,16 @@ class LabelEmail():
 class Trash(LoginRequiredMixin, View):
     def get(self, request, id):
         email = Email.objects.get(pk=id)
-        email.is_trash = True
-        print(email.is_trash)
+        if email.is_trash is False:
+            email.is_trash = True
+            # print(email.is_trash)
+            # email.save(update_fields=['is_trash'])
+            # # email.update()
+            # print(email.is_trash)
+        else:
+            email.is_trash = False
+
         email.save(update_fields=['is_trash'])
-        # email.update()
-        print(email.is_trash)
         return redirect('mail_page:home')
 
 
@@ -464,3 +468,28 @@ class TrashBox(LoginRequiredMixin, View):
         emails = Email.objects.filter((Q(receiver=username) | Q(user=username)) & Q(is_trash=True))
 
         return render(request, 'mail_page/trashbox.html', {'emails': emails})
+
+
+class Archive(LoginRequiredMixin, View):
+    def get(self, request, id):
+        email = Email.objects.get(pk=id)
+        if email.is_archived is False:
+            email.is_archived = True
+            # print(email.is_trash)
+            # email.save(update_fields=['is_trash'])
+            # # email.update()
+            # print(email.is_trash)
+        else:
+            email.is_archived = False
+
+        email.save(update_fields=['is_archived'])
+        return redirect('mail_page:home')
+
+
+class ArchiveBox(LoginRequiredMixin, View):
+    def get(self, request):
+        username = request.user
+        emails = Email.objects.filter((Q(receiver=username) | Q(user=username)) & (Q(is_trash=False) &
+                                                                                   Q(is_archived=True)))
+
+        return render(request, 'mail_page/archivebox.html', {'emails': emails})

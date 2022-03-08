@@ -17,5 +17,6 @@
         {% endwith %}
         {% with re=email.id %}
             <button type="submit"><a href="{% url 'mail_page:trash' re %}">Trash</a></button>
+            <button type="submit"><a href="{% url 'mail_page:archive' re %}">Archive</a></button>
         {% endwith %}
 {% endblock %}
