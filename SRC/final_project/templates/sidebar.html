@@ -1,0 +1,56 @@
+<nav id="sidebar">
+    <div class="p-4 pt-5">
+        <div>{{ username }}</div>
+        <a href="#" class="img logo rounded-circle mb-5" style=""></a>
+        <ul class="list-unstyled components mb-5">
+            <li>
+                <a href="{% url 'mail_page:compose' %}" class="compose-button">Compose</a>
+            </li>
+            <li>
+                <a href="{% url 'mail_page:inbox' %}">Inbox<span> (تعداد)</span></a>
+            </li>
+            <li>
+                <a href="{% url 'mail_page:sent' %}">Sent</a>
+            </li>
+{#            <li>#}
+{#                <a href="{% url 'mail_page:draft' %}">Drafts</a>#}
+{#            </li>#}
+            <li>
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                   class="dropdown-toggle">Contacts</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu">
+{#                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"#}
+{#                   class="dropdown-toggle">Contacts</a>#}
+{#                <ul class="collapse list-unstyled" id="homeSubmenu">#}
+                    <li>
+                        <a href="{% url 'mail_page:showcontacts' %}">All contacts</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'mail_page:newcontacts' %}">Add new contacts</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                   class="dropdown-toggle">Labels</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu">
+                    <li>
+                        <a href="{% url 'mail_page:showlabel' %}">Labels</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'mail_page:newlabel' %}">Add new labels</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="{% url 'mail_page:archivebox' %}">Archive</a>
+                    </li>
+                    <li>
+                    <a href="{% url 'mail_page:trashbox' %}">Trash</a>
+                    </li>
+                </ul>
+                <div class="footer">
+                    <a href="{% url 'logout' %}" target="_blank">Logout</a>
+                </div>
+    </div>
+</nav>

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Show contacts {% endblock %}
 {% block content %}
+    <h2 class="mb-4">Show contacts</h2>
     {% for contact in contacts %}
         {% with replies=contact.id %}
 

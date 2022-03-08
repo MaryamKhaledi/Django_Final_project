@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Trash {% endblock %}
 {% block content %}
+    <h2 class="mb-4">Trash</h2>
     {% for email in emails %}
         <p>receiver : {{email.receiver}}<p>
         <p>user : {{email.user}}<p>

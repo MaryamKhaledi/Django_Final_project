@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Detail email {% endblock %}
 {% block content %}
+    <h2 class="mb-4">Detail email</h2>
     <p>from : {{ email.user }}</p>
     <p>cc : {{ email.cc }}</p>
     <p>subject : {{ email.subject }}</p>
