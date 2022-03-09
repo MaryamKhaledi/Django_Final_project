@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import View
 from accounts.models import User
-from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm
+from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm, SearchForm
 from .models import Email, Contacts, Label
 
 
@@ -52,7 +52,8 @@ class ComposeEmail(LoginRequiredMixin, View):
                     user = User.objects.get(id=request.user.id)
                     cd['user'] = user
                     cd['receiver'] = rec.strip()
-                    Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],receiver=cd['receiver'])
+                    Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
+                                         receiver=cd['receiver'], file=cd['file'])
                     messages.success(request, 'you created a new email', 'success')
                 # else:
                 #     messages.warning(request, 'you created a new email', 'warning')
@@ -88,17 +89,9 @@ class Inbox(LoginRequiredMixin, View):
     """ Email Inbox class """
 
     def get(self, request):
-        # userid = request.user
-        # username = User.objects.get(pk=userid)
         username = request.user.username
         received = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(receiver=username))
-        username_mail_cc = Email.objects.filter(cc=username).values()
-        username_mail_bcc = Email.objects.filter(bcc=username).values()
-        received_mail_cc = received.union(username_mail_cc)
-        all_cc_emails = received_mail_cc.union(received_mail_cc)
-        return render(request, 'mail_page/home.html',
-                      {'username': username, 'all_emails': received, 'all_cc_emails': all_cc_emails,
-                       'all_bcc_emails': username_mail_bcc})
+        return render(request, 'mail_page/home.html', {'username': username, 'all_emails': received})
 
 
 # class ReplyView(LoginRequiredMixin, View):
@@ -250,7 +243,13 @@ class ShowContacts(LoginRequiredMixin, View):
         owner = request.user  # this is email username
         print('****', owner)
         contacts = Contacts.objects.filter(owner=owner)
-        return render(request, 'mail_page/showcontacts.html', {'contacts': contacts})
+        form = SearchForm()
+        if 'search' in request.GET:
+            form = SearchForm(request.GET)
+            if form.is_valid():
+                cd = form.cleaned_data['search']
+                contacts = contacts.filter(Q(name__icontains=cd) | Q(email__icontains=cd))
+        return render(request, 'mail_page/showcontacts.html', {'form': form, 'contacts': contacts})
 
 
 # @method_decorator(login_required)

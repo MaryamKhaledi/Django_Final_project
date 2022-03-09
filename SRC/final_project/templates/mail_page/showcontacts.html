@@ -2,6 +2,10 @@
 {% block title %} Show contacts {% endblock %}
 {% block content %}
     <h2 class="mb-4">Show contacts</h2>
+    <form action="" method="get">
+        {{ form }}
+        <input type="submit" value="search">
+    </form>
     {% for contact in contacts %}
         {% with replies=contact.id %}
 
@@ -15,6 +19,6 @@
     {% endfor %}
     <br><br><br><br>
     <p>Download all contacts in csv format</p>
-{#    <button type="submit"><a href="{{ data.document.url }}" download="{{ data.document.url }} "></a>Download</button>#}
+    {#    <button type="submit"><a href="{{ data.document.url }}" download="{{ data.document.url }} "></a>Download</button>#}
     <button type="submit"><a href="{% url 'mail_page:contactscsv' %}">Download</a></button>
 {% endblock %}
