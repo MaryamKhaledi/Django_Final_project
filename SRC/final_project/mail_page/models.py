@@ -51,10 +51,10 @@ class Contacts(models.Model):
 
 class Email(models.Model):
     """ Email class and its fields """
-    STATUS_CHOICES = (
-        ('draft', 'Draft'),
-        ('send', 'Send')
-    )
+    # STATUS_CHOICES = (
+    #     ('draft', 'Draft'),
+    #     ('send', 'Send')
+    # )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     signature = models.ForeignKey(Signature, on_delete=models.PROTECT, related_name="signature",
                                   blank=True, null=True)
@@ -76,7 +76,7 @@ class Email(models.Model):
     is_reply = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False, blank=True, null=True)
     is_trash = models.BooleanField(default=False, blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    # status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
 
     # tags = TaggableManager()
 

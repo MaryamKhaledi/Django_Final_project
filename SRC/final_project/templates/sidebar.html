@@ -12,16 +12,16 @@
             <li>
                 <a href="{% url 'mail_page:sent' %}">Sent</a>
             </li>
-{#            <li>#}
-{#                <a href="{% url 'mail_page:draft' %}">Drafts</a>#}
-{#            </li>#}
+            {#            <li>#}
+            {#                <a href="{% url 'mail_page:draft' %}">Drafts</a>#}
+            {#            </li>#}
             <li>
                 <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
                    class="dropdown-toggle">Contacts</a>
                 <ul class="collapse list-unstyled" id="pageSubmenu">
-{#                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"#}
-{#                   class="dropdown-toggle">Contacts</a>#}
-{#                <ul class="collapse list-unstyled" id="homeSubmenu">#}
+                    {#                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"#}
+                    {#                   class="dropdown-toggle">Contacts</a>#}
+                    {#                <ul class="collapse list-unstyled" id="homeSubmenu">#}
                     <li>
                         <a href="{% url 'mail_page:showcontacts' %}">All contacts</a>
                     </li>
@@ -44,13 +44,13 @@
             </li>
             <li>
                 <a href="{% url 'mail_page:archivebox' %}">Archive</a>
-                    </li>
-                    <li>
-                    <a href="{% url 'mail_page:trashbox' %}">Trash</a>
-                    </li>
-                </ul>
-                <div class="footer">
-                    <a href="{% url 'logout' %}" target="_blank">Logout</a>
-                </div>
+            </li>
+            <li>
+                <a href="{% url 'mail_page:trashbox' %}">Trash</a>
+            </li>
+        </ul>
+        <div class="footer">
+            <a href="{% url 'logout' %}" target="_blank">Logout</a>
+        </div>
     </div>
 </nav>

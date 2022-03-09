@@ -4,9 +4,10 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.views import View
 from accounts.models import User
-from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm
+from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm
 from .models import Email, Contacts, Label
 
 
@@ -149,6 +150,30 @@ def reply_email(request, email_user):
         form = ReplyForm()
 
     return render(request, 'mail_page/reply.html', {'form': form})
+
+
+class ForwardEmail(LoginRequiredMixin, View):
+    # sent = Email.objects.get(id=email_id)
+    form_class = ForwardForm
+
+    def get(self, request, id):
+        form = self.form_class
+        return render(request, 'mail_page/forward.html', {'form': form})
+
+    def post(self, request, id):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            base_mail = form.save(commit=False)
+            mail = Email.objects.get(pk=id)
+            # todo: multiple receptions
+            base_mail.subject = mail.subject
+            base_mail.body = mail.body
+            base_mail.file = mail.file
+            base_mail.timestamp = timezone.now()
+            base_mail.user = request.user
+            base_mail.save()
+            messages.success(request, 'Forwarded successfully', 'success')
+            return redirect('mail_page:sent')
 
 
 # @method_decorator(login_required)
@@ -352,8 +377,56 @@ class ShowLabel(LoginRequiredMixin, View):
         return render(request, 'mail_page/showlabel.html', {'labels': labels})
 
 
-class LabelEmail():
-    pass
+class AddLabel(LoginRequiredMixin, View):
+    form_class = NewLabelForm
+
+    def get(self, request, id):
+        form = self.form_class
+        return render(request, 'mail_page/addlabel.html', {'form': form})
+
+    def post(self, request, id):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            try:
+                new_label = form.save(commit=False)
+                label_t = Label.objects.get(title=cd["title"])
+                email = Email.objects.get(pk=id)
+                email.label.add(label_t)
+                email.save()
+                return redirect('mail_page:detail')
+            except:
+                return redirect('mail_page:home')
+
+
+class LabelDetail(LoginRequiredMixin, View):
+
+    def get(self, request, id):
+        email_list = []
+        label = Label.objects.get(pk=id)
+        labels_email = label.email_set.all().values_list('id')
+        labels_list = list(labels_email)
+        for i in labels_list:
+            email = Email.objects.get(pk=i[0])
+            email_list.append(email)
+        # print(labels_email['id'])
+        # email_id = labels_email['id']
+        # email = Email.objects.get(pk=email_id)
+        return render(request, 'mail_page/labeldetail.html', {'all_emails': email_list})
+
+
+class DeleteLabel(LoginRequiredMixin, View):
+    def get(self, request, id):
+        try:
+            label = get_object_or_404(Label, pk=id)
+            if label.owner == request.user:
+                label.delete()
+                messages.success(request, 'label deleted successfully', 'success')
+            else:
+                messages.error(request, 'you cant delete this label', 'danger')
+        except:
+            pass
+        return redirect('mail_page:showlabel')
 
 
 # class UserContactView(LoginRequiredMixin, View):
@@ -493,3 +566,11 @@ class ArchiveBox(LoginRequiredMixin, View):
                                                                                    Q(is_archived=True)))
 
         return render(request, 'mail_page/archivebox.html', {'emails': emails})
+
+
+class DeleteEmail(LoginRequiredMixin, View):
+    def get(self, request, id):
+        email = Email.objects.get(pk=id)
+        email.delete()
+        messages.success(request, "email has deleted successfully FOREVER!!", 'success')
+        return redirect('mail_page:trashbox')

@@ -7,13 +7,22 @@ class ComposeForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file', 'status']
+        fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file']
 
 
 class ReplyForm(forms.ModelForm):
     class Meta:
         model = Email
         fields = ('subject', 'body', 'file')
+        widgets = {
+            'body': forms.Textarea(attrs={'class': 'form-control'})
+        }
+
+
+class ForwardForm(forms.ModelForm):
+    class Meta:
+        model = Email
+        fields = ('receiver', 'cc', 'bcc')
         widgets = {
             'body': forms.Textarea(attrs={'class': 'form-control'})
         }

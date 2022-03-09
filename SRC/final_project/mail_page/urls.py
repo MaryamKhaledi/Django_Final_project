@@ -24,5 +24,9 @@ urlpatterns = [
     path('trashbox/', views.TrashBox.as_view(), name='trashbox'),
     path('archive/<int:id>', views.Archive.as_view(), name='archive'),
     path('archivebox/', views.ArchiveBox.as_view(), name='archivebox'),
-    # path('showlabel/', views.LabelsEmail.as_view(), name='labelsemail'),
+    path('deleteemail/<int:id>', views.DeleteEmail.as_view(), name='deleteemail'),
+    path('forward/<int:id>', views.ForwardEmail.as_view(), name='forward'),
+    path('addlabel/<int:id>', views.AddLabel.as_view(), name='addlabel'),
+    path('labeldetail/<int:id>', views.LabelDetail.as_view(), name='labeldetail'),
+    path('deletelabel/<int:id>', views.DeleteLabel.as_view(), name='deletelabel'),
 ]

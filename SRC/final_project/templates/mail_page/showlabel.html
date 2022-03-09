@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% block title %} Show Labels {% endblock %}
 {% block content %}
-        <h2 class="mb-4">Show Labels</h2>
+    <h2 class="mb-4">Show Labels</h2>
     {% for label in labels %}
-{#        {% with replies=contact.id %}#}
-{#            <a href="{% url 'mail_page:labelshowemail' replies %}">#}
-{#                <p><a href="{% url 'mail_page:labelsemail' %}">{{ label.title }}</a></p>#}
-                <p>{{ label.title }}</p>
-{#            </a>#}
-{#        {% endwith %}#}
+        {% with replies=label.id %}
+        {#            <a href="{% url 'mail_page:labelshowemail' replies %}">#}
+        <p>
+            <a href="{% url 'mail_page:labeldetail' replies %}">{{ label.title }}</a>
+            <button type="submit"><a href="{% url 'mail_page:deletelabel' re %}">delete label</a></button>
+        </p>
+        {#            </a>#}
+        {% endwith %}
     {% endfor %}
 {% endblock %}
