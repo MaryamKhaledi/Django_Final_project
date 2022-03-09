@@ -7,7 +7,8 @@
         {#            <a href="{% url 'mail_page:labelshowemail' replies %}">#}
         <p>
             <a href="{% url 'mail_page:labeldetail' replies %}">{{ label.title }}</a>
-            <button type="submit"><a href="{% url 'mail_page:deletelabel' re %}">delete label</a></button>
+            <button type="submit"><a href="{% url 'mail_page:labeldetail' replies %}">Emails</a></button>
+            <button type="submit"><a href="{% url 'mail_page:deletelabel' replies %}">delete label</a></button>
         </p>
         {#            </a>#}
         {% endwith %}

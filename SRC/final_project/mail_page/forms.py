@@ -4,10 +4,10 @@ from .models import Email, Contacts, Label
 
 class ComposeForm(forms.ModelForm):
     """Form for the new email model"""
-
     class Meta:
         model = Email
         fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file']
+
 
 
 class ReplyForm(forms.ModelForm):

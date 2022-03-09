@@ -18,6 +18,17 @@ def home(request):
     return render(request, 'mail_page/home.html')
 
 
+def cc_bcc(cc, bcc):
+    all_receiver = []
+    if cc is not None:
+        cc_list = cc.split(',')
+        all_receiver.extend(cc_list)
+    if bcc is not None:
+        bcc_list = bcc.split(',')
+        all_receiver.extend(bcc_list)
+    return all_receiver
+
+
 class ComposeEmail(LoginRequiredMixin, View):
     """New email compose class"""
     form_class = ComposeForm
@@ -30,14 +41,21 @@ class ComposeEmail(LoginRequiredMixin, View):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             cd = form.cleaned_data
-            new_email = form.save(commit=False)
-            # new_email.user = request.user
-            new_email.receiver = get_object_or_404(User, username=cd['receiver'])
-            user = User.objects.get(id=request.user.id)
-            new_email.user = user
-            # rcv = Email.objects.filter(receiver__name__in=receiver)
-            new_email.save()
-            messages.success(request, 'you created a new email', 'success')
+            cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
+            cc_bcc_list.append(cd['receiver'])
+            receiver_list = list(dict.fromkeys(cc_bcc_list))
+            for rec in receiver_list:
+                if cd['cc'] is not None and rec in cd['cc']:
+                    cd['body'] += "\n\n sent to: " + rec
+                exist_rec = User.objects.filter(username=rec.strip())
+                if exist_rec:
+                    user = User.objects.get(id=request.user.id)
+                    cd['user'] = user
+                    cd['receiver'] = rec.strip()
+                    Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],receiver=cd['receiver'])
+                    messages.success(request, 'you created a new email', 'success')
+                # else:
+                #     messages.warning(request, 'you created a new email', 'warning')
             return redirect('mail_page:home')
 
 
@@ -73,7 +91,6 @@ class Inbox(LoginRequiredMixin, View):
         # userid = request.user
         # username = User.objects.get(pk=userid)
         username = request.user.username
-        print(username)
         received = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(receiver=username))
         username_mail_cc = Email.objects.filter(cc=username).values()
         username_mail_bcc = Email.objects.filter(bcc=username).values()
@@ -283,7 +300,8 @@ class NewContacts(LoginRequiredMixin, View):
                 messages.success(request, f'You Add {cd["name"]} in your contact', 'success')
             except:
                 # todo : sms monaseb
-                return HttpResponse('boro kodet ro dorost con ')
+                messages.warning(request, 'email not found !', 'warning')
+                return redirect('mail_page:newcontact')
         return redirect('mail_page:showcontacts')
 
 
@@ -360,7 +378,7 @@ class NewLabel(LoginRequiredMixin, View):
             # Contacts.objects.create(name=cd['name'], email=cd['email'], phon_number=cd['phon_number'],
             # birth_date=cd['birth_date'])
             newlabel.owner = owner
-            form.save()
+            newlabel.save()
             messages.success(request, 'you created a new label', 'success')
             return redirect('mail_page:showlabel')
         return render(request, 'mail_page/newlabel.html', {'form': form})
@@ -412,7 +430,7 @@ class LabelDetail(LoginRequiredMixin, View):
         # print(labels_email['id'])
         # email_id = labels_email['id']
         # email = Email.objects.get(pk=email_id)
-        return render(request, 'mail_page/labeldetail.html', {'all_emails': email_list})
+        return render(request, 'mail_page/labeldetail.html', {'all_emails': email_list, 'label': label})
 
 
 class DeleteLabel(LoginRequiredMixin, View):

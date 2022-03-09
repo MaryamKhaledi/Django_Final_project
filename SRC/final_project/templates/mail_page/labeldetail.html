@@ -1,3 +1,7 @@
+{% extends 'base.html' %}
+{% block title %} Emails labels {% endblock %}
+{% block content %}
+    <h2 class="mb-4">label : {{ label.title }}</h2>
 {% for email in all_emails %}
     <a href="{% url 'mail_page:detail' email.id  %}">
         <ul class="message-list">
@@ -20,3 +24,4 @@
         </ul>
     </a>
 {% endfor %}
+{% endblock %}

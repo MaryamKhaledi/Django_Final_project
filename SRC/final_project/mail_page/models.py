@@ -77,7 +77,7 @@ class Email(models.Model):
     is_archived = models.BooleanField(default=False, blank=True, null=True)
     is_trash = models.BooleanField(default=False, blank=True, null=True)
     # status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-
+    # todo : is_draft , cc and bss = maxLength:800
     # tags = TaggableManager()
 
     # فیلد archived هم مربوط به این هستش که آیا کاربر اون ایمیل رو آرشیو کرده یا نه.
