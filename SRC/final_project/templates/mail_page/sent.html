@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} Sent {% endblock %}
 {% block content %}
+    <h2 class="mb-4">Sent</h2>
     {% for email in sent %}
         <p>{{ email.receiver }}</p>
         {% if email.subject %}
@@ -15,7 +16,11 @@
         {% endif %}
         <p>{{ email.timestamp }}</p>
         {% with detail=email.id %}
-            <button type="submit" style="color: #19A68C"><a href="{% url 'mail_page:detail' detail %}">detail</a>
+            <button type="submit" style="color: #19A68C"><a href="{% url 'mail_page:detail' detail %}">Detail</a>
+            </button>
+            <button type="submit" style="color: #19A68C">><a href="{% url 'mail_page:trash' detail %}">Trash</a>
+            </button>
+            <button type="submit" style="color: #19A68C">><a href="{% url 'mail_page:archive' detail %}">Archive</a>
             </button>
         {% endwith %}
     {% endfor %}

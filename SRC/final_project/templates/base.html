@@ -3,15 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    {% block link %}{% endblock %}
-    <style>{% block style %}{% endblock %}</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/mail_page/css/home/style.css">
+    <style>
+        #sidebar .compose-button {
+            border-radius: 100px;
+            padding: 13px 20px;
+            text-align: center;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #61C7B3;
+            border: 2px solid #61C7B3;
+            display: block;
+            margin: 0 50px 30px 50px;
+            cursor: pointer;
+        }
+
+        #sidebar .compose-button:hover {
+            color: #ABB4BE;
+            border-color: #ABB4BE;
+        }
+    </style>
 </head>
 <body>
-{% include "navbar.html" %}
-{% block content %} {% endblock %}
+<div class="wrapper d-flex align-items-stretch">
+    {% include "sidebar.html" %}
+    <div id="content" class="p-4 p-md-5">
+        {% include "navbar.html" %}
+        {% block content %}{% endblock %}
 
-<script>
-    {% block javascript %} {% endblock %}
-</script>
+    </div>
+</div>
+<script src="/static/mail_page/js/home/jquery.min.js"></script>
+<script src="/static/mail_page/js/home/popper.js"></script>
+<script src="/static/mail_page/js/home/bootstrap.min.js"></script>
+<script src="/static/mail_page/js/home/main.js"></script>
 </body>
 </html>

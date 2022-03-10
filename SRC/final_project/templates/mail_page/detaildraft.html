@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %} Detail Draft {% endblock %}
+{% block content %}
+    <h2 class="mb-4">Detail Draft Form</h2>
+    <p>from : {{ form.user }}</p>
+    <p>cc : {{ form.cc }}</p>
+    <p>subject : {{ form.subject }}</p>
+    <p>body : {{ form.body }}</p>
+    {% if form.file %}
+        <p class="view-message text-left"><span style="color: blue">attachment</span>
+            <a href="{{ form.file.url }}" class="fa fa-paperclip" style="color: black">File</a></p>
+    {% endif %}
+    <p>signature : {{ form.signature }}</p>
+    <p>time : {{ form.timestamp }}
+        {% with re=form.id %}
+            <button type="submit"><a href="{% url 'mail_page:trash' re %}">Trash</a></button>
+        {% endwith %}
+        <button type="submit"><a href="{% url 'mail_page:compose' %}">Send</a></button>
+        <button type="submit"><a href="{% url 'mail_page:createdraft' %}">Draft</a></button>
+{% endblock %}

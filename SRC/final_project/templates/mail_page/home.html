@@ -1,303 +1,332 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/static/mail_page/css/home.css">
-</head>
-<body>
-<aside id="sidebar" class="nano">
-    <div class="nano-content">
-        <div>{{ username }}</div>
-        <div class="logo-container">Mail</div>
-        <a href="{% url 'mail_page:compose' %}" class="compose-button">Compose</a>
-        <menu class="menu-segment">
-            <ul>
-                <li class="active"><a href="#">Inbox<span> (تعداد)</span></a></li>
-                <li><a href="#">Important</a></li>
-                <li><a href="{% url 'mail_page:sent' %}">Sent</a></li>
+{% extends 'base.html' %}
+{% block title %}Inbox{% endblock %}
+{% block content %}
+    <h2 class="mb-4">Inbox</h2>
+    {% for email in all_emails %}
+        <a href="{% url 'mail_page:detail' email.id %}">
+            <ul class="message-list">
+                <li class="unread">
+                    <div class="col col-1"><span class="dot"></span>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="chk1">
+                            <label for="chk1" class="toggle"></label>
+                        </div>
+                        <p class="title">{{ email.user.username }}</p><span
+                                class="star-toggle glyphicon glyphicon-star-empty"></span>
+                    </div>
+                    <div class="col col-2">
+                        <div class="subject">{{ email.subject }}
+                            &nbsp;&ndash;<span class="teaser">{{ email.body|truncatewords:8 }}</span>
+                        </div>
+                        <div class="date">{{ email.timestamp }}</div>
+                    </div>
+                </li>
+            </ul>
+        </a>
+    {% endfor %}
+{% endblock %}
+
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta http-equiv="X-UA-Compatible" content="IE=edge">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#    <title>Document</title>#}
+{#    <link rel="stylesheet" href="/static/mail_page/css/home.css">#}
+{#</head>#}
+{#<body>#}
+{#<aside id="sidebar" class="nano">#}
+{#    <div class="nano-content">#}
+{#        <div>{{ username }}</div>#}
+{#        <div class="logo-container">Mail</div>#}
+{#        <a href="{% url 'mail_page:compose' %}" class="compose-button">Compose</a>#}
+{#        <menu class="menu-segment">#}
+{#            <ul>#}
+{#                <li class="active"><a href="#">Inbox<span> (تعداد)</span></a></li>#}
+{#                <li><a href="#">Important</a></li>#}
+{#                <li><a href="{% url 'mail_page:sent' %}">Sent</a></li>#}
 {#                <li><a href="{% url 'mail_page:draft' %}">Drafts</a></li>#}
-{#                <li><a href="{% url 'mail_page:trash' %}">Trash</a></li>#}
-            </ul>
-        </menu>
-        <div class="separator"></div>
-        <div class="menu-segment">
-            <ul class="labels">
-                <li class="title"><a href="{% url 'mail_page:showlabel' %}">Labels</a>
-                    <span class="icon"></span><a href="{% url 'mail_page:newlabel' %}">+</a></li>
-                <li><a href="#">Dribbble <span class="ball pink"></span></a></li>
-                <li><a href="#">Roommates <span class="ball green"></span></a></li>
-                <li><a href="#">Bills <span class="ball blue"></span></a></li>
-            </ul>
-        </div>
-        <div class="separator"></div>
-        <div class="menu-segment">
-            <ul class="chat">
-                <li class="title"><a href="{% url 'mail_page:showcontacts' %}">Contacts</a>
-                    <span class="icon"></span><a href="{% url 'mail_page:newcontacts' %}">+</a></li>
-                <li><a href="#"><span class="ball green"></span>Laura Turner</a></li>
-                <li><a href="#"><span class="ball green"></span>Kevin Jones</a></li>
-                <li><a href="#"><span class="ball blue"></span>John King</a></li>
-                <li><a href="#"><span class="ball blue"></span>Jenny Parker</a></li>
-                <li><a href="#"><span class="ball blue"></span>Paul Green</a></li>
-                <li><a href="#" class="italic-link">See offline list</a></li>
-            </ul>
-        </div>
-        <div class="bottom-padding"></div>
-    </div>
-</aside>
-<main id="main">
-    <div class="overlay"></div>
-    <header class="header">
-        <div class="search-box">
-            <input placeholder="Search..."><span class="icon glyphicon glyphicon-search"></span>
-        </div>
-        <h1 class="page-title"><a class="sidebar-toggle-btn trigger-toggle-sidebar"><span class="line"></span><span
-                class="line"></span><span class="line"></span><span class="line line-angle1"></span><span
-                class="line line-angle2"></span></a>Inbox<a><span class="icon glyphicon glyphicon-chevron-down"></span></a>
-        </h1>
-    </header>
-
-    <div id="main-nano-wrapper" class="nano">
-        <div class="nano-content">
-
-            {% include 'mail_page/inbox.html' %}
-
-        </div>
-    </div>
-</main>
-<div id="message">
-    <div class="header">
-        <h1 class="page-title"><a class="icon circle-icon glyphicon glyphicon-chevron-left trigger-message-close"></a>Process<span
-                class="grey">(6)</span></h1>
-        <p>From <a href="#">You</a> to <a href="#">Scott Waite</a>, started on <a href="#">March 2, 2014</a> at 2:14 pm
-            est.</p>
-    </div>
-    <div id="message-nano-wrapper" class="nano">
-        <div class="nano-content">
-            <ul class="message-container">
-                <li class="sent">
-                    <div class="details">
-                        <div class="left">You
-                            <div class="arrow"></div>
-                            Scott
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-                <li class="received">
-                    <div class="details">
-                        <div class="left">Scott
-                            <div class="arrow orange"></div>
-                            You
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-                <li class="received">
-                    <div class="details">
-                        <div class="left">Scott
-                            <div class="arrow orange"></div>
-                            You
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-                <li class="received">
-                    <div class="details">
-                        <div class="left">Scott
-                            <div class="arrow orange"></div>
-                            You
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-                <li class="received">
-                    <div class="details">
-                        <div class="left">Scott
-                            <div class="arrow orange"></div>
-                            You
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-                <li class="received">
-                    <div class="details">
-                        <div class="left">Scott
-                            <div class="arrow orange"></div>
-                            You
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-                <li class="received">
-                    <div class="details">
-                        <div class="left">Scott
-                            <div class="arrow orange"></div>
-                            You
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-                <li class="sent">
-                    <div class="details">
-                        <div class="left">You
-                            <div class="arrow"></div>
-                            Scott
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-                <li class="received">
-                    <div class="details">
-                        <div class="left">Scott
-                            <div class="arrow orange"></div>
-                            You
-                        </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
-                    </div>
-                    <div class="message">
-                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth
-                            void have signs beast lesser all god saying for gathering wherein whose of in be created
-                            stars. Them whales upon life divide earth own.</p>
-                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.
-                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein
-                            give bring.</p>
-                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring
-                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.
-                            Called sixth light.</p>
-                    </div>
-                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a
-                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"
-                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
-<script src="/static/mail_page/js/home.js"></script>
-</body>
-</html>
+{#                <li><a href="{% url 'mail_page:archivebox' %}">Archive</a></li>#}
+{#                <li><a href="{% url 'mail_page:trashbox' %}">Trash</a></li>#}
+{#            </ul>#}
+{#        </menu>#}
+{#        <div class="separator"></div>#}
+{#        <div class="menu-segment">#}
+{#            <ul class="labels">#}
+{#                <li class="title"><a href="{% url 'mail_page:showlabel' %}">Labels</a>#}
+{#                    <span class="icon"></span><a href="{% url 'mail_page:newlabel' %}">+</a></li>#}
+{#                <li><a href="#">Dribbble <span class="ball pink"></span></a></li>#}
+{#                <li><a href="#">Roommates <span class="ball green"></span></a></li>#}
+{#                <li><a href="#">Bills <span class="ball blue"></span></a></li>#}
+{#            </ul>#}
+{#        </div>#}
+{#        <div class="separator"></div>#}
+{#        <div class="menu-segment">#}
+{#            <ul class="chat">#}
+{#                <li class="title"><a href="{% url 'mail_page:showcontacts' %}">Contacts</a>#}
+{#                    <span class="icon"></span><a href="{% url 'mail_page:newcontacts' %}">+</a></li>#}
+{#                <li><a href="#"><span class="ball green"></span>Laura Turner</a></li>#}
+{#                <li><a href="#"><span class="ball green"></span>Kevin Jones</a></li>#}
+{#                <li><a href="#"><span class="ball blue"></span>John King</a></li>#}
+{#                <li><a href="#"><span class="ball blue"></span>Jenny Parker</a></li>#}
+{#                <li><a href="#"><span class="ball blue"></span>Paul Green</a></li>#}
+{#                <li><a href="#" class="italic-link">See offline list</a></li>#}
+{#            </ul>#}
+{#        </div>#}
+{#        <div class="bottom-padding"></div>#}
+{#    </div>#}
+{#</aside>#}
+{#<main id="main">#}
+{#    <div class="overlay"></div>#}
+{#    <header class="header">#}
+{#        <div class="search-box">#}
+{#            <input placeholder="Search..."><span class="icon glyphicon glyphicon-search"></span>#}
+{#        </div>#}
+{#        <h1 class="page-title"><a class="sidebar-toggle-btn trigger-toggle-sidebar"><span class="line"></span><span#}
+{#                class="line"></span><span class="line"></span><span class="line line-angle1"></span><span#}
+{#                class="line line-angle2"></span></a>Inbox<a><span class="icon glyphicon glyphicon-chevron-down"></span></a>#}
+{#        </h1>#}
+{#    </header>#}
+{##}
+{#    <div id="main-nano-wrapper" class="nano">#}
+{#        <div class="nano-content">#}
+{##}
+{#            {% include 'mail_page/inbox.html' %}#}
+{##}
+{#        </div>#}
+{#    </div>#}
+{#</main>#}
+{#<div id="message">#}
+{#    <div class="header">#}
+{#        <h1 class="page-title"><a class="icon circle-icon glyphicon glyphicon-chevron-left trigger-message-close"></a>Process<span#}
+{#                class="grey">(6)</span></h1>#}
+{#        <p>From <a href="#">You</a> to <a href="#">Scott Waite</a>, started on <a href="#">March 2, 2014</a> at 2:14 pm#}
+{#            est.</p>#}
+{#    </div>#}
+{#    <div id="message-nano-wrapper" class="nano">#}
+{#        <div class="nano-content">#}
+{#            <ul class="message-container">#}
+{#                <li class="sent">#}
+{#                    <div class="details">#}
+{#                        <div class="left">You#}
+{#                            <div class="arrow"></div>#}
+{#                            Scott#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#                <li class="received">#}
+{#                    <div class="details">#}
+{#                        <div class="left">Scott#}
+{#                            <div class="arrow orange"></div>#}
+{#                            You#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#                <li class="received">#}
+{#                    <div class="details">#}
+{#                        <div class="left">Scott#}
+{#                            <div class="arrow orange"></div>#}
+{#                            You#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#                <li class="received">#}
+{#                    <div class="details">#}
+{#                        <div class="left">Scott#}
+{#                            <div class="arrow orange"></div>#}
+{#                            You#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#                <li class="received">#}
+{#                    <div class="details">#}
+{#                        <div class="left">Scott#}
+{#                            <div class="arrow orange"></div>#}
+{#                            You#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#                <li class="received">#}
+{#                    <div class="details">#}
+{#                        <div class="left">Scott#}
+{#                            <div class="arrow orange"></div>#}
+{#                            You#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#                <li class="received">#}
+{#                    <div class="details">#}
+{#                        <div class="left">Scott#}
+{#                            <div class="arrow orange"></div>#}
+{#                            You#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#                <li class="sent">#}
+{#                    <div class="details">#}
+{#                        <div class="left">You#}
+{#                            <div class="arrow"></div>#}
+{#                            Scott#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#                <li class="received">#}
+{#                    <div class="details">#}
+{#                        <div class="left">Scott#}
+{#                            <div class="arrow orange"></div>#}
+{#                            You#}
+{#                        </div>#}
+{#                        <div class="right">March 6, 2014, 20:08 pm</div>#}
+{#                    </div>#}
+{#                    <div class="message">#}
+{#                        <p>| The every winged bring, whose life. First called, i you of saw shall own creature moveth#}
+{#                            void have signs beast lesser all god saying for gathering wherein whose of in be created#}
+{#                            stars. Them whales upon life divide earth own.</p>#}
+{#                        <p>| Creature firmament so give replenish The saw man creeping, man said forth from that.#}
+{#                            Fruitful multiply lights air. Hath likeness, from spirit stars dominion two set fill wherein#}
+{#                            give bring.</p>#}
+{#                        <p>| Gathering is. Lesser Set fruit subdue blessed let. Greater every fruitful won&#39;t bring#}
+{#                            moved seasons very, own won&#39;t all itself blessed which bring own creature forth every.#}
+{#                            Called sixth light.</p>#}
+{#                    </div>#}
+{#                    <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a#}
+{#                            href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#"#}
+{#                                                                                                           class="circle-icon small red-hover glyphicon glyphicon-flag"></a>#}
+{#                    </div>#}
+{#                </li>#}
+{#            </ul>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+{#<script src="/static/mail_page/js/home.js"></script>#}
+{#</body>#}
+{#</html>#}

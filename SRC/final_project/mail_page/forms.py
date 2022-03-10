@@ -4,19 +4,32 @@ from .models import Email, Contacts, Label
 
 class ComposeForm(forms.ModelForm):
     """Form for the new email model"""
-
     class Meta:
         model = Email
         fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file']
 
 
+
 class ReplyForm(forms.ModelForm):
     class Meta:
         model = Email
-        fields = ('body', 'file')
+        fields = ('subject', 'body', 'file')
         widgets = {
             'body': forms.Textarea(attrs={'class': 'form-control'})
         }
+
+
+class ForwardForm(forms.ModelForm):
+    class Meta:
+        model = Email
+        fields = ('receiver', 'cc', 'bcc')
+        widgets = {
+            'body': forms.Textarea(attrs={'class': 'form-control'})
+        }
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 
 class NewContactForm(forms.ModelForm):
@@ -24,7 +37,11 @@ class NewContactForm(forms.ModelForm):
 
     class Meta:
         model = Contacts
-        fields = ['name', 'email', 'phone_number', 'birth_date']
+        fields = ['name', 'email', 'phone_number', 'other_email', 'birth_date']
+
+        widgets = {
+            'birthdate': DateInput(),
+        }
 
 
 class NewLabelForm(forms.ModelForm):

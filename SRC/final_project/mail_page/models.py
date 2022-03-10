@@ -1,6 +1,6 @@
+from enum import unique
 from django.core.exceptions import ValidationError
 from taggit.managers import TaggableManager
-
 from accounts.models import User, valid_phone_number
 from django.utils.translation import ugettext as _
 from django.db import models
@@ -15,8 +15,11 @@ def file_size(value):
 
 class Label(models.Model):
     """ Emails can be categorized by label """
-    title = models.CharField(max_length=30, unique=True, blank=True, null=True)
+    title = models.CharField(max_length=30, blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="label_owner")
+
+    class Meta:
+        unique_together = ['title', 'owner']
 
     def __str__(self):
         return self.title
@@ -38,6 +41,7 @@ class Contacts(models.Model):
     phone_number = models.CharField(max_length=13, blank=True, null=True, validators=[valid_phone_number],
                                     help_text=_('The number of characters entered must be at least 12 and at most 13 '
                                                 'digits and must start with +.'))
+    other_email = models.CharField(max_length=60, blank=True, null=True)
     birth_date = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contacts_owner")
 
@@ -47,35 +51,34 @@ class Contacts(models.Model):
 
 class Email(models.Model):
     """ Email class and its fields """
-    STATUS_CHOICES = (
-        ('draft', 'Draft'),
-        ('send', 'Send')
-    )
+    # STATUS_CHOICES = (
+    #     ('draft', 'Draft'),
+    #     ('send', 'Send')
+    # )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     signature = models.ForeignKey(Signature, on_delete=models.PROTECT, related_name="signature",
                                   blank=True, null=True)
     # contacts = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True,
     #                              related_name="contacts")
     # receiver = models.ManyToManyField(User, related_name="receiver")
-    receiver = models.CharField(max_length=50, help_text=_('username@eml.com'))
+    receiver = models.CharField(max_length=50, blank=True, null=True, help_text=_('username@eml.com'))
     # cc = models.ManyToManyField(User, related_name="cc", blank=True)
-    cc = models.CharField(max_length=500, null=True, blank=True)
+    cc = models.CharField(max_length=800, null=True, blank=True)
     # bcc = models.ManyToManyField(User, related_name="bcc", blank=True)
-    bcc = models.CharField(max_length=500, null=True, blank=True)
+    bcc = models.CharField(max_length=800, null=True, blank=True)
     subject = models.CharField(max_length=100, blank=True, null=True)
     label = models.ManyToManyField(Label, blank=True, )
     body = models.TextField(blank=True, null=True)
-    file = models.FileField(upload_to='', validators=[file_size], blank=True, null=True)
+    file = models.FileField(upload_to='documents/%Y/%m/%d/', validators=[file_size], blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # زمان ارسال ایمیل
-    is_read = models.BooleanField(default=False, )  # فیلد read هم مربوط به این هستش آیا اون ایمیل خونده شده یا نه؟
+    is_draft = models.BooleanField(default=False, )
     reply = models.ForeignKey('self', on_delete=models.CASCADE, related_name='remail', blank=True, null=True)
     is_reply = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False, blank=True, null=True)
     is_trash = models.BooleanField(default=False, blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-    tags = TaggableManager()
 
-    # فیلد archived هم مربوط به این هستش که آیا کاربر اون ایمیل رو آرشیو کرده یا نه.
+    # status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    # tags = TaggableManager()
 
     class Meta:
         ordering = ['-timestamp']

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2 class="mb-4">Archive</h2>
+    {% for email in emails %}
+        <p>receiver : {{ email.receiver }}<p>
+        <p>user : {{ email.user }}<p>
+        <p>timestamp : {{ email.timestamp }}<p>
+        <p>subject : {{ email.subject }}</p>
+        {% with re=email.id %}
+            <button type="submit"><a href="{% url 'mail_page:archive' re %}">Undo</a></button>
+            {#            <button type="submit"><a href="{% url 'mail_page:deletetrash' re %}">Delete</a></button> #}
+        {% endwith %}
+    {% endfor %}
+{% endblock %}

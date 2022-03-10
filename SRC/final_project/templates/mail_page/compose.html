@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
-{% block title %} Compose {% endblock %}
+{% block title %} Compose{% endblock %}
 {% block content %}
+    <h2 class="mb-4">Compose</h2>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Send</button>
+        <button type="submit" name="compose">Send</button>
+        <button type="submit" name="createdraft">Draft</button>
     </form>
 {% endblock %}

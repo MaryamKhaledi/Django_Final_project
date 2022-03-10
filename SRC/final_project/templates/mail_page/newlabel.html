@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} New Label {% endblock %}
 {% block content %}
+    <h2 class="mb-4">New Label</h2>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}

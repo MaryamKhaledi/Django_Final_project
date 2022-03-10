@@ -26,3 +26,6 @@ urlpatterns = [
   path('mail_page/', include('mail_page.urls', namespace='mail_page')),
   path('accounts/', include('accounts.urls')),
 ] + static(settings.STATIC_URL)
+
+if settings.DEBUG:
+  urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
