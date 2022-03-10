@@ -15,7 +15,7 @@ from .models import Email, Contacts, Label
 
 
 def home(request):
-    return render(request, 'mail_page/home.html')
+    return render(request, 'mail_page/home.html', {'username': request.user})
 
 
 def cc_bcc(cc, bcc):
@@ -114,7 +114,7 @@ class SentEmail(LoginRequiredMixin, View):
     def get(self, request):
         username = request.user
         sent = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(user=username))
-        return render(request, 'mail_page/sent.html', {'sent': sent})
+        return render(request, 'mail_page/sent.html', {'username': username, 'sent': sent})
 
 
 class DetailEmail(View):
@@ -122,7 +122,7 @@ class DetailEmail(View):
         email = Email.objects.get(pk=id)
         # global indexemailid
         # indexemailid = email.id
-        return render(request, 'mail_page/detail.html', {'email': email})
+        return render(request, 'mail_page/detail.html', {'username': request.user, 'email': email})
 
 
 # class ReplyEmail(View):
@@ -159,7 +159,7 @@ def reply_email(request, email_user):
     else:
         form = ReplyForm()
 
-    return render(request, 'mail_page/reply.html', {'form': form})
+    return render(request, 'mail_page/reply.html', {'username': request.user, 'form': form})
 
 
 class ForwardEmail(LoginRequiredMixin, View):
@@ -168,21 +168,33 @@ class ForwardEmail(LoginRequiredMixin, View):
 
     def get(self, request, id):
         form = self.form_class
-        return render(request, 'mail_page/forward.html', {'form': form})
+        return render(request, 'mail_page/forward.html', {'username': request.user, 'form': form})
 
     def post(self, request, id):
         form = self.form_class(request.POST)
         if form.is_valid():
-            base_mail = form.save(commit=False)
+            cd = form.cleaned_data
+            # base_mail = form.save(commit=False)
             mail = Email.objects.get(pk=id)
             # todo: multiple receptions
-            base_mail.subject = mail.subject
-            base_mail.body = mail.body
-            base_mail.file = mail.file
-            base_mail.timestamp = timezone.now()
-            base_mail.user = request.user
-            base_mail.save()
-            messages.success(request, 'Forwarded successfully', 'success')
+            cd['subject'] = mail.subject
+            cd['body'] = mail.body
+            cd['file'] = mail.file
+            cd['timestamp'] = timezone.now()
+            cd['user'] = request.user
+            cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
+            cc_bcc_list.append(cd['receiver'])
+            receiver_list = list(dict.fromkeys(cc_bcc_list))
+            for rec in receiver_list:
+                if cd['cc'] is not None and rec in cd['cc']:
+                    cd['body'] += "\n\n sent to: " + rec
+                exist_rec = User.objects.filter(username=rec.strip())
+                if exist_rec:
+                    cd['receiver'] = rec.strip()
+                    Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'], file=cd['file']
+                                         , receiver=cd['receiver'])
+                    # base_mail.save()
+                    messages.success(request, 'Forwarded successfully', 'success')
             return redirect('mail_page:sent')
 
 
@@ -217,7 +229,7 @@ class EmailContact(LoginRequiredMixin, View):
             messages.success(request, 'your email sent successfully', 'success')
             return redirect('mail_page:showcontacts')
 
-        return render(request, 'mail_page/contactemail.html', {'form': form})
+        return render(request, 'mail_page/contactemail.html', {'username': request.user, 'form': form})
 
 
 # def emailcontct(request, id):
@@ -249,7 +261,8 @@ class ShowContacts(LoginRequiredMixin, View):
             if form.is_valid():
                 cd = form.cleaned_data['search']
                 contacts = contacts.filter(Q(name__icontains=cd) | Q(email__icontains=cd))
-        return render(request, 'mail_page/showcontacts.html', {'form': form, 'contacts': contacts})
+        return render(request, 'mail_page/showcontacts.html',
+                      {'username': request.user, 'form': form, 'contacts': contacts})
 
 
 # @method_decorator(login_required)
@@ -307,7 +320,7 @@ class NewContacts(LoginRequiredMixin, View):
 class DetailContacts(View):
     def get(self, request, id):
         contact = Contacts.objects.get(pk=id)
-        return render(request, 'mail_page/detailcontacts.html', {'contact': contact})
+        return render(request, 'mail_page/detailcontacts.html', {'username': request.user, 'contact': contact})
 
 
 class DeleteContacts(LoginRequiredMixin, View):
@@ -341,7 +354,7 @@ class UpdateContacts(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         contact = self.contact_instance
         form = self.form_class(instance=contact)
-        return render(request, 'mail_page/newcontact.html', {'form': form})
+        return render(request, 'mail_page/newcontact.html', {'username': request.user, 'form': form})
 
     def post(self, request, *args, **kwargs):
         contact = self.contact_instance
@@ -363,7 +376,7 @@ class NewLabel(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         form = self.form_class
-        return render(request, 'mail_page/newlabel.html', {'form': form})
+        return render(request, 'mail_page/newlabel.html', {'username': request.user, 'form': form})
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -380,7 +393,7 @@ class NewLabel(LoginRequiredMixin, View):
             newlabel.save()
             messages.success(request, 'you created a new label', 'success')
             return redirect('mail_page:showlabel')
-        return render(request, 'mail_page/newlabel.html', {'form': form})
+        return render(request, 'mail_page/newlabel.html', {'username': request.user, 'form': form})
 
 
 class ShowLabel(LoginRequiredMixin, View):
@@ -391,7 +404,7 @@ class ShowLabel(LoginRequiredMixin, View):
         # print('*****', owner)
         # print('*****', owner.id)
         labels = Label.objects.filter(owner=owner)
-        return render(request, 'mail_page/showlabel.html', {'labels': labels})
+        return render(request, 'mail_page/showlabel.html', {'username': request.user, 'labels': labels})
 
 
 class AddLabel(LoginRequiredMixin, View):
@@ -399,7 +412,7 @@ class AddLabel(LoginRequiredMixin, View):
 
     def get(self, request, id):
         form = self.form_class
-        return render(request, 'mail_page/addlabel.html', {'form': form})
+        return render(request, 'mail_page/addlabel.html', {'username': request.user, 'form': form})
 
     def post(self, request, id):
         form = self.form_class(request.POST)
@@ -429,7 +442,8 @@ class LabelDetail(LoginRequiredMixin, View):
         # print(labels_email['id'])
         # email_id = labels_email['id']
         # email = Email.objects.get(pk=email_id)
-        return render(request, 'mail_page/labeldetail.html', {'all_emails': email_list, 'label': label})
+        return render(request, 'mail_page/labeldetail.html',
+                      {'username': request.user, 'all_emails': email_list, 'label': label})
 
 
 class DeleteLabel(LoginRequiredMixin, View):
@@ -557,7 +571,7 @@ class TrashBox(LoginRequiredMixin, View):
         username = request.user
         emails = Email.objects.filter((Q(receiver=username) | Q(user=username)) & Q(is_trash=True))
 
-        return render(request, 'mail_page/trashbox.html', {'emails': emails})
+        return render(request, 'mail_page/trashbox.html', {'username': request.user, 'emails': emails})
 
 
 class Archive(LoginRequiredMixin, View):
@@ -582,7 +596,7 @@ class ArchiveBox(LoginRequiredMixin, View):
         emails = Email.objects.filter((Q(receiver=username) | Q(user=username)) & (Q(is_trash=False) &
                                                                                    Q(is_archived=True)))
 
-        return render(request, 'mail_page/archivebox.html', {'emails': emails})
+        return render(request, 'mail_page/archivebox.html', {'username': request.user, 'emails': emails})
 
 
 class DeleteEmail(LoginRequiredMixin, View):

@@ -63,24 +63,22 @@ class Email(models.Model):
     # receiver = models.ManyToManyField(User, related_name="receiver")
     receiver = models.CharField(max_length=50, help_text=_('username@eml.com'))
     # cc = models.ManyToManyField(User, related_name="cc", blank=True)
-    cc = models.CharField(max_length=500, null=True, blank=True)
+    cc = models.CharField(max_length=800, null=True, blank=True)
     # bcc = models.ManyToManyField(User, related_name="bcc", blank=True)
-    bcc = models.CharField(max_length=500, null=True, blank=True)
+    bcc = models.CharField(max_length=800, null=True, blank=True)
     subject = models.CharField(max_length=100, blank=True, null=True)
     label = models.ManyToManyField(Label, blank=True, )
     body = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to='documents/%Y/%m/%d/', validators=[file_size], blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # زمان ارسال ایمیل
-    is_read = models.BooleanField(default=False, )  # فیلد read هم مربوط به این هستش آیا اون ایمیل خونده شده یا نه؟
+    is_draft = models.BooleanField(default=False, )
     reply = models.ForeignKey('self', on_delete=models.CASCADE, related_name='remail', blank=True, null=True)
     is_reply = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False, blank=True, null=True)
     is_trash = models.BooleanField(default=False, blank=True, null=True)
-    # status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-    # todo : is_draft , cc and bss = maxLength:800
-    # tags = TaggableManager()
 
-    # فیلد archived هم مربوط به این هستش که آیا کاربر اون ایمیل رو آرشیو کرده یا نه.
+    # status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    # tags = TaggableManager()
 
     class Meta:
         ordering = ['-timestamp']
