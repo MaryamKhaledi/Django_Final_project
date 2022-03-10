@@ -61,7 +61,7 @@ class Email(models.Model):
     # contacts = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True,
     #                              related_name="contacts")
     # receiver = models.ManyToManyField(User, related_name="receiver")
-    receiver = models.CharField(max_length=50, help_text=_('username@eml.com'))
+    receiver = models.CharField(max_length=50, blank=True, null=True, help_text=_('username@eml.com'))
     # cc = models.ManyToManyField(User, related_name="cc", blank=True)
     cc = models.CharField(max_length=800, null=True, blank=True)
     # bcc = models.ManyToManyField(User, related_name="bcc", blank=True)

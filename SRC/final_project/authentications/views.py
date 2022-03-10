@@ -54,7 +54,7 @@ class RegisterView(View):
                 user.is_active = False  # Deactivate account till it is confirmed
                 user.save()
                 current_site = get_current_site(request)
-                subject = 'Activate Your NOOB MESSENGER Account'
+                subject = 'Activate Your EML MESSENGER Account'
                 message = render_to_string('authentications/account_activation_email.html', {
                     'user': user,
                     'domain': current_site.domain,

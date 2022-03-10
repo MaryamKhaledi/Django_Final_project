@@ -1,14 +1,20 @@
 asgiref==3.5.0
+certifi==2021.10.8
+charset-normalizer==2.0.12
 Contacts==1.0
 Django==3.2
 -e git+https://github.com/mjs7231/django-dbbackup.git@2ef053cda8078817ad6872cb3719e38de3cfdaeb#egg=django_dbbackup
 django-taggit==2.1.0
+idna==3.3
+kavenegar==1.1.2
 password==0.2
 psycopg2==2.9.3
 pytz==2021.3
+requests==2.27.1
 six==1.16.0
 sqlparse==0.4.2
 suds==1.0.0
+urllib3==1.26.8
 UserManager==0.5.3
 username==2.1.0
 validate-email==1.3

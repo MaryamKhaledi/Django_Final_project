@@ -10,11 +10,11 @@
                 <a href="{% url 'mail_page:inbox' %}">Inbox<span> (تعداد)</span></a>
             </li>
             <li>
-                <a href="{% url 'mail_page:sent' %}">Sent</a>
+                <a href="{% url 'mail_page:sent' %}">Sentbox</a>
             </li>
-            {#            <li>#}
-            {#                <a href="{% url 'mail_page:draft' %}">Drafts</a>#}
-            {#            </li>#}
+            <li>
+                <a href="{% url 'mail_page:draftbox' %}">Drafts</a>
+            </li>
             <li>
                 <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
                    class="dropdown-toggle">Contacts</a>

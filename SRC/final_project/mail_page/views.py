@@ -35,29 +35,51 @@ class ComposeEmail(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         form = self.form_class
-        return render(request, 'mail_page/compose.html', {'form': form})
+        return render(request, 'mail_page/compose.html', {'username': request.user, 'form': form})
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
-            cd = form.cleaned_data
-            cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
-            cc_bcc_list.append(cd['receiver'])
-            receiver_list = list(dict.fromkeys(cc_bcc_list))
-            for rec in receiver_list:
-                if cd['cc'] is not None and rec in cd['cc']:
-                    cd['body'] += "\n\n sent to: " + rec
-                exist_rec = User.objects.filter(username=rec.strip())
-                if exist_rec:
-                    user = User.objects.get(id=request.user.id)
-                    cd['user'] = user
-                    cd['receiver'] = rec.strip()
-                    Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
-                                         receiver=cd['receiver'], file=cd['file'])
-                    messages.success(request, 'you created a new email', 'success')
-                # else:
-                #     messages.warning(request, 'you created a new email', 'warning')
-            return redirect('mail_page:home')
+            if "compose" in request.POST:
+                cd = form.cleaned_data
+                cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
+                cc_bcc_list.append(cd['receiver'])
+                receiver_list = list(dict.fromkeys(cc_bcc_list))
+                for rec in receiver_list:
+                    if cd['cc'] is not None and rec in cd['cc']:
+                        cd['body'] += "\n\n sent to: " + rec
+                    exist_rec = User.objects.filter(username=rec.strip())
+                    if exist_rec:
+                        user = User.objects.get(id=request.user.id)
+                        cd['user'] = user
+                        cd['receiver'] = rec.strip()
+                        cd['is_draft'] = False
+                        Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
+                                             receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
+                        messages.success(request, 'you created a new email', 'success')
+                    # else:
+                    #     messages.warning(request, 'you created a new email', 'warning')
+                return redirect('mail_page:home')
+            elif "createdraft" in request.POST:
+                cd = form.cleaned_data
+                cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
+                cc_bcc_list.append(cd['receiver'])
+                receiver_list = list(dict.fromkeys(cc_bcc_list))
+                for rec in receiver_list:
+                    if cd['cc'] is not None and rec in cd['cc']:
+                        cd['body'] += "\n\n sent to: " + rec
+                    exist_rec = User.objects.filter(username=rec.strip())
+                    if exist_rec:
+                        user = User.objects.get(id=request.user.id)
+                        cd['user'] = user
+                        cd['receiver'] = rec.strip()
+                        cd['is_draft'] = True
+                        Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
+                                             receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
+                        messages.success(request, 'you created a new email', 'success')
+                    # else:
+                    #     messages.warning(request, 'you created a new email', 'warning')
+                return redirect('mail_page:home')
 
 
 # class ComposeEmail(LoginRequiredMixin, View):
@@ -89,7 +111,7 @@ class Inbox(LoginRequiredMixin, View):
     """ Email Inbox class """
 
     def get(self, request):
-        username = request.user.username
+        username = request.user
         received = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(receiver=username))
         return render(request, 'mail_page/home.html', {'username': username, 'all_emails': received})
 
@@ -115,6 +137,53 @@ class SentEmail(LoginRequiredMixin, View):
         username = request.user
         sent = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(user=username))
         return render(request, 'mail_page/sent.html', {'username': username, 'sent': sent})
+
+
+class DraftBox(LoginRequiredMixin, View):
+    def get(self, request):
+        draft = Email.objects.filter(is_draft=True, user=request.user)
+        return render(request, 'mail_page/draftbox.html', {'username': request.user, 'draft': draft})
+
+
+class DetailDraft(LoginRequiredMixin, View):
+    form_class = ComposeForm
+
+    def setup(self, request, *args, **kwargs):
+        self.draft_instance = get_object_or_404(Email, pk=kwargs['id'])
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        draft = self.draft_instance
+        form = self.form_class(instance=draft)
+        return render(request, 'mail_page/compose.html', {'username': request.user, 'form': form})
+
+    def post(self, request, *args, **kwargs):
+        draft = self.draft_instance
+        form = self.form_class(request.POST, instance=draft)
+        if form.is_valid():
+            new_email = form.save(commit=False)
+            cd = form.cleaned_data
+            new_email.user = request.user
+            new_email.save()
+            messages.success(request, 'you updated this post', 'success')
+            return redirect('mail_page:draftbox')
+
+
+class CreateDraft(LoginRequiredMixin, View):
+    form_class = ComposeForm
+
+    def get(self, request, id):
+        form = self.form_class
+        return render(request, 'mail_page/compose.html', {'form': form})
+
+    def post(self, request, id):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            draft_email = form.save(commit=False)
+            draft_email.user = request.user
+            draft_email.save()
+            messages.success(request, 'email drafted', 'success')
+            return redirect('mail_page:home')
 
 
 class DetailEmail(View):
@@ -216,7 +285,7 @@ class EmailContact(LoginRequiredMixin, View):
 
     def get(self, request, id):
         form = self.form_class
-        return render(request, 'mail_page/contactemail.html', {'form': form})
+        return render(request, 'mail_page/contactemail.html', {'username': request.user, 'form': form})
 
     def post(self, request, id):
         form = self.form_class(request.POST, request.FILES)
@@ -296,7 +365,7 @@ class NewContacts(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         form = self.form_class
-        return render(request, 'mail_page/newcontact.html', {'form': form})
+        return render(request, 'mail_page/newcontact.html', {'username': request.user, 'form': form})
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -363,8 +432,7 @@ class UpdateContacts(LoginRequiredMixin, View):
             new_contact = form.save(commit=False)
             cd = form.cleaned_data
             email = get_object_or_404(User, username=cd['email'])
-            owner = request.user
-            new_contact.owner = owner
+            new_contact.owner = request.user
             new_contact.save()
             messages.success(request, 'you updated this post', 'success')
             return redirect('mail_page:detailcontacts', contact.id)
@@ -570,7 +638,6 @@ class TrashBox(LoginRequiredMixin, View):
     def get(self, request):
         username = request.user
         emails = Email.objects.filter((Q(receiver=username) | Q(user=username)) & Q(is_trash=True))
-
         return render(request, 'mail_page/trashbox.html', {'username': request.user, 'emails': emails})
 
 
