@@ -14,8 +14,8 @@ from .models import Email, Contacts, Label
 # User.objets.filter(Q(email__isnull=True)|Q(username__isnull=True))
 
 
-def home(request):
-    return render(request, 'mail_page/home.html', {'username': request.user})
+# def home(request):
+#     return render(request, 'mail_page/home.html', {'username': request.user})
 
 
 def cc_bcc(cc, bcc):
@@ -62,24 +62,24 @@ class ComposeEmail(LoginRequiredMixin, View):
                 return redirect('mail_page:home')
             elif "createdraft" in request.POST:
                 cd = form.cleaned_data
-                cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
-                cc_bcc_list.append(cd['receiver'])
-                receiver_list = list(dict.fromkeys(cc_bcc_list))
-                for rec in receiver_list:
-                    if cd['cc'] is not None and rec in cd['cc']:
-                        cd['body'] += "\n\n sent to: " + rec
-                    exist_rec = User.objects.filter(username=rec.strip())
-                    if exist_rec:
-                        user = User.objects.get(id=request.user.id)
-                        cd['user'] = user
-                        cd['receiver'] = rec.strip()
-                        cd['is_draft'] = True
-                        Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
-                                             receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
-                        messages.success(request, 'you created a new email', 'success')
-                    # else:
-                    #     messages.warning(request, 'you created a new email', 'warning')
-                return redirect('mail_page:home')
+                # cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
+                # cc_bcc_list.append(cd['receiver'])
+                # receiver_list = list(dict.fromkeys(cc_bcc_list))
+                # for rec in receiver_list:
+                #     if cd['cc'] is not None and rec in cd['cc']:
+                #         cd['body'] += "\n\n sent to: " + rec
+                #     exist_rec = User.objects.filter(username=rec.strip())
+                #     if exist_rec:
+                user = User.objects.get(id=request.user.id)
+                cd['user'] = user
+                #         cd['receiver'] = rec.strip()
+                cd['is_draft'] = True
+                Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
+                                     receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
+                messages.success(request, 'Email drafted', 'success')
+                # else:
+                #     messages.warning(request, 'you created a new email', 'warning')
+            return redirect('mail_page:home')
 
 
 # class ComposeEmail(LoginRequiredMixin, View):
