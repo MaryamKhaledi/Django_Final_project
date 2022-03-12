@@ -9,7 +9,6 @@ class ComposeForm(forms.ModelForm):
         fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file']
 
 
-
 class ReplyForm(forms.ModelForm):
     class Meta:
         model = Email

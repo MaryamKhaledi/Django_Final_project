@@ -43,11 +43,12 @@ class ComposeEmail(LoginRequiredMixin, View):
             if "compose" in request.POST:
                 cd = form.cleaned_data
                 cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
-                cc_bcc_list.append(cd['receiver'])
-                receiver_list = list(dict.fromkeys(cc_bcc_list))
+                if cd['receiver'] is not None:
+                    cc_bcc_list.append(cd['receiver'])
+                receiver_list = list(dict.fromkeys(cc_bcc_list))  # pak kardan tekrariha
                 for rec in receiver_list:
                     if cd['cc'] is not None and rec in cd['cc']:
-                        cd['body'] += "\n\n sent to: " + rec
+                        cd['body'] += "\n sent to: " + rec
                     exist_rec = User.objects.filter(username=rec.strip())
                     if exist_rec:
                         user = User.objects.get(id=request.user.id)
@@ -71,7 +72,7 @@ class ComposeEmail(LoginRequiredMixin, View):
                 #     exist_rec = User.objects.filter(username=rec.strip())
                 #     if exist_rec:
                 user = User.objects.get(id=request.user.id)
-                cd['user'] = user
+                cd['user'] = user  # cd['user']= request.user
                 #         cd['receiver'] = rec.strip()
                 cd['is_draft'] = True
                 Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
@@ -112,7 +113,8 @@ class Inbox(LoginRequiredMixin, View):
 
     def get(self, request):
         username = request.user
-        received = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(receiver=username))
+        received = Email.objects.filter(
+            (Q(is_trash=False) & Q(is_archived=False) & Q(is_draft=False)) & Q(receiver=username))
         return render(request, 'mail_page/home.html', {'username': username, 'all_emails': received})
 
 
@@ -135,6 +137,7 @@ class Inbox(LoginRequiredMixin, View):
 class SentEmail(LoginRequiredMixin, View):
     def get(self, request):
         username = request.user
+        #  todo: add Q(is_draft=False)
         sent = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(user=username))
         return render(request, 'mail_page/sent.html', {'username': username, 'sent': sent})
 
@@ -186,7 +189,7 @@ class CreateDraft(LoginRequiredMixin, View):
             return redirect('mail_page:home')
 
 
-class DetailEmail(View):
+class DetailEmail(LoginRequiredMixin, View):
     def get(self, request, id):
         email = Email.objects.get(pk=id)
         # global indexemailid

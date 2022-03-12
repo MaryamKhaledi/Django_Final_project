@@ -57,7 +57,7 @@ class User(AbstractUser):
 
 class OtpCode(models.Model):
     phone_number = models.CharField(max_length=11, unique=True)
-    code = models.PositiveSmallIntegerField()
+    code = models.PositiveSmallIntegerField()  # code ro misaze
     created = models.DateTimeField(auto_now=True)
 
     def __str__(self):

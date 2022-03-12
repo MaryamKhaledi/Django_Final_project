@@ -4,9 +4,9 @@
 {% block content %}
     <h2 class="mb-4">Detail email</h2>
     <p>from : {{ email.user }}</p>
-    <p>cc : {{ email.cc }}</p>
+{#    <p>cc : {{ email.cc }}</p>#}
     <p>subject : {{ email.subject }}</p>
-    <p>body : {{ email.body }}</p>
+    <pre>body : {{ email.body }}</pre>
     {#    <p>file : {{ email.file }}</p>#}
     {% if email.file %}
         <p class="view-message text-left"><span style="color: blue">attachment</span>
