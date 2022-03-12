@@ -148,6 +148,30 @@ class DraftBox(LoginRequiredMixin, View):
         return render(request, 'mail_page/draftbox.html', {'username': request.user, 'draft': draft})
 
 
+# class DetailDraft(LoginRequiredMixin, View):
+#     form_class = ComposeForm
+#
+#     def setup(self, request, *args, **kwargs):
+#         self.draft_instance = get_object_or_404(Email, pk=kwargs['id'])
+#         return super().setup(request, *args, **kwargs)
+#
+#     def get(self, request, *args, **kwargs):
+#         draft = self.draft_instance
+#         form = self.form_class(instance=draft)
+#         return render(request, 'mail_page/compose.html', {'username': request.user, 'form': form})
+#
+#     def post(self, request, *args, **kwargs):
+#         draft = self.draft_instance
+#         form = self.form_class(request.POST, instance=draft)
+#         if form.is_valid():
+#             new_email = form.save(commit=False)
+#             cd = form.cleaned_data
+#             new_email.user = request.user
+#             new_email.save()
+#             messages.success(request, 'you updated this post', 'success')
+#             return redirect('mail_page:draftbox')
+
+
 class DetailDraft(LoginRequiredMixin, View):
     form_class = ComposeForm
 
@@ -164,12 +188,36 @@ class DetailDraft(LoginRequiredMixin, View):
         draft = self.draft_instance
         form = self.form_class(request.POST, instance=draft)
         if form.is_valid():
-            new_email = form.save(commit=False)
-            cd = form.cleaned_data
-            new_email.user = request.user
-            new_email.save()
-            messages.success(request, 'you updated this post', 'success')
-            return redirect('mail_page:draftbox')
+            if "compose" in request.POST:
+                cd = form.cleaned_data
+                cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
+                if cd['receiver'] is not None:
+                    cc_bcc_list.append(cd['receiver'])
+                receiver_list = list(dict.fromkeys(cc_bcc_list))
+                for rec in receiver_list:
+                    if cd['cc'] is not None and rec in cd['cc']:
+                        cd['body'] += "\n sent to: " + rec
+                    exist_rec = User.objects.filter(username=rec.strip())
+                    if exist_rec:
+                        user = User.objects.get(id=request.user.id)
+                        cd['user'] = user
+                        cd['receiver'] = rec.strip()
+                        cd['is_draft'] = False
+                        Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
+                                             receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
+                        draft_email = Email.objects.get(pk=kwargs['id'])
+                        draft_email.delete()
+                        messages.success(request, 'you created a new email', 'success')
+                return redirect('mail_page:home')
+            elif "createdraft" in request.POST:
+                cd = form.cleaned_data
+                user = User.objects.get(id=request.user.id)
+                cd['user'] = user
+                cd['is_draft'] = True
+                Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
+                                     receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
+                messages.success(request, 'Email drafted', 'success')
+            return redirect('mail_page:home')
 
 
 class CreateDraft(LoginRequiredMixin, View):
@@ -255,7 +303,8 @@ class ForwardEmail(LoginRequiredMixin, View):
             cd['timestamp'] = timezone.now()
             cd['user'] = request.user
             cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
-            cc_bcc_list.append(cd['receiver'])
+            if cd['receiver'] is not None:
+                cc_bcc_list.append(cd['receiver'])
             receiver_list = list(dict.fromkeys(cc_bcc_list))
             for rec in receiver_list:
                 if cd['cc'] is not None and rec in cd['cc']:
