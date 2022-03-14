@@ -2,6 +2,28 @@
 {% block title %}Inbox{% endblock %}
 {% block content %}
     <h2 class="mb-4">Inbox</h2>
+    <!-- JavaScript Bundle with Popper -->
+    <!-- CSS only -->
+
+    {% if messages %}
+
+        {% for msg in messages %}
+
+            <div class="alert alert-{{ msg.tags }} alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>{{ msg }}</strong>
+            </div>
+
+            {#        #}
+            {#        <div class="alert alert-success alert-dismissible fade show" role="alert">#}
+            {#            <p>{{ msg }}</p>#}
+            {#<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>#}
+            {#        <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>#}
+            {#</div>#}
+            {#        <p class="alert alert-{{ msg.tags }}">{{ msg }}</p>#}
+        {% endfor %}
+
+    {% endif %}
     {% for email in all_emails %}
         <a href="{% url 'mail_page:detail' email.id %}">
             <ul class="message-list">
@@ -24,6 +46,13 @@
             </ul>
         </a>
     {% endfor %}
+    {#    <script>#}
+    {#        setTimeout(function(){#}
+    {#            if ($('#msg').length > 0){#}
+    {#              $('#msg').remove();#}
+    {#            }#}
+    {#        },4000)#}
+    {#    </script>#}
 {% endblock %}
 
 {#<!DOCTYPE html>#}

@@ -43,6 +43,18 @@
                 </ul>
             </li>
             <li>
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                   class="dropdown-toggle">Signature</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu">
+                    <li>
+                        <a href="{% url 'mail_page:showsignature' %}">Show Signature</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'mail_page:newsignature' %}">New Signature</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
                 <a href="{% url 'mail_page:archivebox' %}">Archive</a>
             </li>
             <li>

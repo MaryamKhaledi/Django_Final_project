@@ -1,18 +1,28 @@
 from django import forms
-from .models import Email, Contacts, Label
+from .models import Email, Contacts, Label, Signature
 
 
 class ComposeForm(forms.ModelForm):
     """Form for the new email model"""
+
     class Meta:
         model = Email
-        fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file']
+        fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file', 'signature']
+
+
+class NewSignatureForm(forms.ModelForm):
+    """Form for the new label model"""
+
+    class Meta:
+        model = Signature
+        fields = ['title']
 
 
 class ReplyForm(forms.ModelForm):
     class Meta:
         model = Email
         fields = ('subject', 'body', 'file')
+        # todo : add signature
         widgets = {
             'body': forms.Textarea(attrs={'class': 'form-control'})
         }
@@ -22,6 +32,7 @@ class ForwardForm(forms.ModelForm):
     class Meta:
         model = Email
         fields = ('receiver', 'cc', 'bcc')
+        # todo : add signature
         widgets = {
             'body': forms.Textarea(attrs={'class': 'form-control'})
         }

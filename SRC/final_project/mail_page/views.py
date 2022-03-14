@@ -7,8 +7,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import View
 from accounts.models import User
-from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm, SearchForm
-from .models import Email, Contacts, Label
+from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm, SearchForm, NewSignatureForm
+from .models import Email, Contacts, Label, Signature
 
 
 # User.objets.filter(Q(email__isnull=True)|Q(username__isnull=True))
@@ -46,21 +46,31 @@ class ComposeEmail(LoginRequiredMixin, View):
                 if cd['receiver'] is not None:
                     cc_bcc_list.append(cd['receiver'])
                 receiver_list = list(dict.fromkeys(cc_bcc_list))  # pak kardan tekrariha
-                for rec in receiver_list:
-                    if cd['cc'] is not None and rec in cd['cc']:
-                        cd['body'] += "\n sent to: " + rec
-                    exist_rec = User.objects.filter(username=rec.strip())
-                    if exist_rec:
-                        user = User.objects.get(id=request.user.id)
-                        cd['user'] = user
-                        cd['receiver'] = rec.strip()
-                        cd['is_draft'] = False
-                        Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
-                                             receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
-                        messages.success(request, 'you created a new email', 'success')
+                if len(receiver_list) == 0:
+                    messages.warning(request, 'message not sent(receiver,bcc,cc=none)', 'warning')
+                    return redirect('mail_page:home')
+                else:
+                    for rec in receiver_list:
+                        if cd['cc'] is not None and rec in cd['cc']:
+                            cd['body'] += "\n sent to: " + rec
+                        exist_rec = User.objects.filter(username=rec.strip())
+                        if exist_rec:
+                            user = User.objects.get(id=request.user.id)
+                            cd['user'] = user
+                            cd['receiver'] = rec.strip()
+                            cd['is_draft'] = False
+                            if cd['status'] == 'add signature':
+                                sig = Signature.objects.filter(owner=request.user)
+                                # sig=sig[0].title
+                                if sig:
+                                    cd['body'] += "\n signature: " + sig[0].title
+                            Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
+                                                 signature=sig[0],
+                                                 receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
+                    messages.success(request, 'email has sent successfully', 'success')
                     # else:
                     #     messages.warning(request, 'you created a new email', 'warning')
-                return redirect('mail_page:home')
+                    return redirect('mail_page:home')
             elif "createdraft" in request.POST:
                 cd = form.cleaned_data
                 # cc_bcc_list = cc_bcc(cd['cc'], cd['bcc'])
@@ -107,14 +117,75 @@ class ComposeEmail(LoginRequiredMixin, View):
 #
 #         return render(request, 'mail_page/home.html', {'form': form})
 
+class NewSignature(LoginRequiredMixin, View):
+    """New email compose class"""
+    form_class = NewSignatureForm
+
+    def setup(self, request, *args, **kwargs):
+        self.signature_instance = Signature.objects.filter(owner=request.user)
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        signature = self.signature_instance
+        if signature:
+            messages.error(request, 'u already have one signature', 'danger')
+            return redirect('mail_page:showsignature')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class
+        return render(request, 'mail_page/newsignature.html', {'username': request.user, 'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            newsignature = form.save(commit=False)
+            cd = form.cleaned_data
+            owner = request.user
+            newsignature.owner = owner
+            newsignature.save()
+            messages.success(request, 'you created a new signature', 'success')
+            return redirect('mail_page:showsignature')
+        return render(request, 'mail_page/newsignature.html', {'username': request.user, 'form': form})
+
+
+class ShowSignature(LoginRequiredMixin, View):
+    def get(self, request):
+        owner = request.user
+        signatures = Signature.objects.filter(owner=owner)
+        return render(request, 'mail_page/showsignature.html', {'username': request.user, 'signatures': signatures})
+
+
+class DeleteSignature(LoginRequiredMixin, View):
+    def get(self, request, id):
+        try:
+            signature = get_object_or_404(Signature, pk=id)
+            if signature.owner == request.user:
+                signature.delete()
+                messages.success(request, 'signature deleted successfully', 'success')
+            else:
+                messages.error(request, 'you cant delete this signature', 'danger')
+        except:
+            pass
+        return redirect('mail_page:showsignature')
+
 
 class Inbox(LoginRequiredMixin, View):
     """ Email Inbox class """
 
     def get(self, request):
+        perfect_email = 0
         username = request.user
         received = Email.objects.filter(
             (Q(is_trash=False) & Q(is_archived=False) & Q(is_draft=False)) & Q(receiver=username))
+        for i in received:
+            t1 = int(i.timestamp.timestamp())
+            t2 = int(timezone.now().timestamp())
+            if 10 >= t2 - t1 >= 0:
+                perfect_email += 1
+        if perfect_email != 0:
+            messages.success(request, f'u have {perfect_email} new messages', 'success')
+
         return render(request, 'mail_page/home.html', {'username': username, 'all_emails': received})
 
 

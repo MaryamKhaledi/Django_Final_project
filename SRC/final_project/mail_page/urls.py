@@ -5,6 +5,10 @@ app_name = 'mail_page'
 urlpatterns = [
     # path('home/', views.home, name='home'),
     path('compose/', views.ComposeEmail.as_view(), name='compose'),
+    # signature
+    path('newsignature/', views.NewSignature.as_view(), name='newsignature'),
+    path('showsignature/', views.ShowSignature.as_view(), name='showsignature'),
+    path('deletesignature/<int:id>', views.DeleteSignature.as_view(), name='deletesignature'),
     # path('inbox/', views.Inbox.as_view(), name='inbox'),
     path('inbox/', views.Inbox.as_view(), name='home'),
     path('detail/<int:id>', views.DetailEmail.as_view(), name='detail'),
