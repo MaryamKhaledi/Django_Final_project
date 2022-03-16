@@ -1,5 +1,7 @@
 from django import forms
-from .models import Email, Contacts, Label, Signature
+from django.forms import RadioSelect
+
+from .models import Email, Contacts, Label, Signature, Filter
 
 
 class ComposeForm(forms.ModelForm):
@@ -7,7 +9,7 @@ class ComposeForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file', 'signature']
+        fields = ['receiver', 'cc', 'bcc', 'subject', 'body', 'file', 'status']
 
 
 class NewSignatureForm(forms.ModelForm):
@@ -64,3 +66,12 @@ class NewLabelForm(forms.ModelForm):
 
 class SearchForm(forms.Form):
     search = forms.CharField()
+
+
+class FilterForm(forms.ModelForm):
+    class Meta:
+        model = Filter
+        fields = ['sender', 'subject', 'body','file' ,'action']
+        # file = forms.TypedChoiceField(widget=forms.RadioSelect)
+        file = forms.BooleanField(widget=RadioSelect(choices=[(True, 'Yes'),
+                                                              (False, 'No')]))

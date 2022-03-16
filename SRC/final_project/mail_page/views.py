@@ -1,4 +1,5 @@
 import csv
+import json
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -6,8 +7,10 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import View
+from django.http import JsonResponse
 from accounts.models import User
-from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm, SearchForm, NewSignatureForm
+from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm, SearchForm, \
+    NewSignatureForm, FilterForm
 from .models import Email, Contacts, Label, Signature
 
 
@@ -61,11 +64,14 @@ class ComposeEmail(LoginRequiredMixin, View):
                             cd['is_draft'] = False
                             if cd['status'] == 'add signature':
                                 sig = Signature.objects.filter(owner=request.user)
-                                # sig=sig[0].title
-                                if sig:
-                                    cd['body'] += "\n signature: " + sig[0].title
+                                if sig is not None:
+                                    sig = sig[0]  # todo: handel
+                                    if sig:
+                                        cd['body'] += "\n signature: " + sig.title
+                            elif cd['status'] == 'none':
+                                sig = None
                             Email.objects.create(user=cd['user'], subject=cd['subject'], body=cd['body'],
-                                                 signature=sig[0],
+                                                 signature=sig,
                                                  receiver=cd['receiver'], file=cd['file'], is_draft=cd['is_draft'])
                     messages.success(request, 'email has sent successfully', 'success')
                     # else:
@@ -445,7 +451,6 @@ class EmailContact(LoginRequiredMixin, View):
 class ShowContacts(LoginRequiredMixin, View):
     def get(self, request):
         owner = request.user  # this is email username
-        print('****', owner)
         contacts = Contacts.objects.filter(owner=owner)
         form = SearchForm()
         if 'search' in request.GET:
@@ -612,6 +617,7 @@ class AddLabel(LoginRequiredMixin, View):
             try:
                 new_label = form.save(commit=False)
                 label_t = Label.objects.get(title=cd["title"])
+                # for id in list_id:
                 email = Email.objects.get(pk=id)
                 email.label.add(label_t)
                 email.save()
@@ -621,7 +627,6 @@ class AddLabel(LoginRequiredMixin, View):
 
 
 class LabelDetail(LoginRequiredMixin, View):
-
     def get(self, request, id):
         email_list = []
         label = Label.objects.get(pk=id)
@@ -754,7 +759,7 @@ class Trash(LoginRequiredMixin, View):
             email.is_trash = False
 
         email.save(update_fields=['is_trash'])
-        return redirect('mail_page:home')
+        return redirect('mail_page:trashbox')
 
 
 class TrashBox(LoginRequiredMixin, View):
@@ -777,7 +782,7 @@ class Archive(LoginRequiredMixin, View):
             email.is_archived = False
 
         email.save(update_fields=['is_archived'])
-        return redirect('mail_page:home')
+        return redirect('mail_page:archivebox')
 
 
 class ArchiveBox(LoginRequiredMixin, View):
@@ -795,3 +800,45 @@ class DeleteEmail(LoginRequiredMixin, View):
         email.delete()
         messages.success(request, "email has deleted successfully FOREVER!!", 'success')
         return redirect('mail_page:trashbox')
+
+
+# def search_email(request):
+#     if request.method == 'POST':
+#         search_str = json.loads(request.body).get('searchText')
+#         expenses = Email.objects.filter(
+#             receiver__icontains=search_str, owner=request.user) | Email.objects.filter(
+#             subject__icontains=search_str, owner=request.user) | Email.objects.filter(
+#             body__icontains=search_str, owner=request.user) | Email.objects.filter(
+#             timestamp__istartswith=search_str, owner=request.user)
+#
+#         date = expenses.values()
+#         return JsonResponse(list(date), safe=False)
+
+
+class FilterEmail(LoginRequiredMixin, View):  # todo: action
+    form_class = FilterForm
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            emails = Email.objects.filter(receiver=request.user)
+            if cd['sender']:
+                try:
+                    sender = User.objects.get(username=cd['sender'])
+                    emails = emails.filter(user=sender.id)
+                except:
+                    messages.warning(request, "this user does not exist", 'danger')
+                    return redirect('mail_page:filteremail')
+            if cd['subject']:
+                emails = emails.filter(Q(subject__icontains=cd['subject']))
+            if cd['body']:
+                emails = emails.filter(Q(body__icontains=cd['body']))
+            if cd['file'] == True:
+                emails = emails.filter(~Q(file=''))
+            return render(request, 'mail_page/showfilteremail.html', {'username': request.user, 'emails': emails})
+        return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})

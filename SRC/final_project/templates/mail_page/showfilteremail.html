@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %} Detail {% endblock %}
+{% block content %}
+    <h2 class="mb-4">Detail</h2>
+    <form action="" method="get">
+        {{ form }}
+        <input type="submit" value="search">
+    </form>
+    {% for email in emails %}
+        {% with replies=email.id %}
+            <a href="{% url 'mail_page:detail' replies %}">
+                <div>
+                    <p>{{ email.subject }}</p>
+                    <small>{{ email.body }}</small>
+                </div>
+            </a>
+        {% endwith %}
+    {% endfor %}
+{% endblock %}

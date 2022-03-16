@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+from django.views.decorators.csrf import csrf_exempt
+
 app_name = 'mail_page'
 urlpatterns = [
     # path('home/', views.home, name='home'),
@@ -36,4 +38,6 @@ urlpatterns = [
     path('addlabel/<int:id>', views.AddLabel.as_view(), name='addlabel'),
     path('labeldetail/<int:id>', views.LabelDetail.as_view(), name='labeldetail'),
     path('deletelabel/<int:id>', views.DeleteLabel.as_view(), name='deletelabel'),
+    # path('searchemail/', csrf_exempt(views.search_email), name='searchemail'),
+    path('filteremail/', views.FilterEmail.as_view(), name='filteremail'),
 ]
