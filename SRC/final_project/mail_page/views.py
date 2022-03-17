@@ -322,9 +322,10 @@ class CreateDraft(LoginRequiredMixin, View):
 class DetailEmail(LoginRequiredMixin, View):
     def get(self, request, id):
         email = Email.objects.get(pk=id)
+        labels = Label.objects.filter(owner=request.user)
         # global indexemailid
         # indexemailid = email.id
-        return render(request, 'mail_page/detail.html', {'username': request.user, 'email': email})
+        return render(request, 'mail_page/detail.html', {'username': request.user, 'email': email, 'labels': labels})
 
 
 # class ReplyEmail(View):
@@ -609,26 +610,30 @@ class ShowLabel(LoginRequiredMixin, View):
 
 
 class AddLabel(LoginRequiredMixin, View):
-    form_class = NewLabelForm
+    # form_class = NewLabelForm
 
-    def get(self, request, id):
-        form = self.form_class
-        return render(request, 'mail_page/addlabel.html', {'username': request.user, 'form': form})
+    def get(self, request, email_id, label_id):
+        # form = self.form_class
+        label_i = Label.objects.get(id=label_id)
+        email = Email.objects.get(id=email_id)
+        email.label.add(label_i)
+        email.save()
+        return redirect('mail_page:labeldetail',label_id)
 
-    def post(self, request, id):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            try:
-                new_label = form.save(commit=False)
-                label_t = Label.objects.get(title=cd["title"])
-                # for id in list_id:
-                email = Email.objects.get(pk=id)
-                email.label.add(label_t)
-                email.save()
-                return redirect('mail_page:detail')
-            except:
-                return redirect('mail_page:home')
+    # def post(self, request, email_id, label_id):
+    #     form = self.form_class(request.POST)
+    #     if form.is_valid():
+    #         cd = form.cleaned_data
+    #         try:
+    #             new_label = form.save(commit=False)
+    #             label_t = Label.objects.get(title=cd["title"])
+    #             # for id in list_id:
+    #             email = Email.objects.get(pk=email_id)
+    #             email.label.add(label_t)
+    #             email.save()
+    #             return redirect('mail_page:detail')
+    #         except:
+    #             return redirect('mail_page:home')
 
 
 class LabelDetail(LoginRequiredMixin, View):
@@ -821,7 +826,7 @@ class DeleteEmail(LoginRequiredMixin, View):
 #         return JsonResponse(list(date), safe=False)
 
 
-class FilterEmail(LoginRequiredMixin, View):  # todo: action
+class FilterEmail(LoginRequiredMixin, View):
     form_class = FilterForm
 
     def get(self, request):
@@ -832,7 +837,7 @@ class FilterEmail(LoginRequiredMixin, View):  # todo: action
         form = self.form_class(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            emails = Email.objects.filter(receiver=request.user)
+            emails = Email.objects.filter(Q(receiver=request.user) | Q(user=request.user))
             if cd['sender']:
                 try:
                     sender = User.objects.get(username=cd['sender'])
