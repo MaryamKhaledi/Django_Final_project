@@ -39,5 +39,6 @@ urlpatterns = [
     path('labeldetail/<int:id>', views.LabelDetail.as_view(), name='labeldetail'),
     path('deletelabel/<int:id>', views.DeleteLabel.as_view(), name='deletelabel'),
     # path('searchemail/', csrf_exempt(views.search_email), name='searchemail'),
-    path('filteremail/', views.FilterEmail.as_view(), name='filteremail'),
+    #path('filteremail/', views.FilterEmail.as_view(), name='filteremail'),
+    path('alpine/', views.FilterAlpineJs.as_view(), name='alpine'),
 ]

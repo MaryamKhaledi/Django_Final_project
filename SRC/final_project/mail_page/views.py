@@ -1,13 +1,18 @@
 import csv
 import json
+
+import username
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from accounts.models import User
 from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm, SearchForm, \
     NewSignatureForm, FilterForm
@@ -773,6 +778,7 @@ class Archive(LoginRequiredMixin, View):
     def get(self, request, id):
         email = Email.objects.get(pk=id)
         if email.is_archived is False:
+            email.is_trash = False
             email.is_archived = True
             # print(email.is_trash)
             # email.save(update_fields=['is_trash'])
@@ -815,30 +821,60 @@ class DeleteEmail(LoginRequiredMixin, View):
 #         return JsonResponse(list(date), safe=False)
 
 
-class FilterEmail(LoginRequiredMixin, View):  # todo: action
-    form_class = FilterForm
+# class FilterEmail(LoginRequiredMixin, View):  # todo: action
+#     form_class = FilterForm
+#
+#     def get(self, request):
+#         form = self.form_class
+#         return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+#
+#     def post(self, request):
+#         form = self.form_class(request.POST)
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             emails = Email.objects.filter(receiver=request.user)
+#             if cd['sender']:
+#                 try:
+#                     sender = User.objects.get(username=cd['sender'])
+#                     emails = emails.filter(user=sender.id)
+#                 except:
+#                     messages.warning(request, "this user does not exist", 'danger')
+#                     return redirect('mail_page:filteremail')
+#             if cd['subject']:
+#                 emails = emails.filter(Q(subject__icontains=cd['subject']))
+#             if cd['body']:
+#                 emails = emails.filter(Q(body__icontains=cd['body']))
+#             if cd['file'] == True:
+#                 emails = emails.filter(~Q(file=''))
+#             for email in emails:
+#                 if cd['action'] == 'trash':
+#                     trash = Trash()
+#                     trash.get(request,email.id)
+#                 elif cd['action'] == 'archive':
+#                     archive = Archive()
+#                     archive.get(request,email.id)
+#                 elif cd['action'] == 'label':
+#                     label = AddLabel()
+#                     label.post(email.id)
+#                 else:
+#                     pass
+#             return render(request, 'mail_page/showfilteremail.html', {'username': request.user, 'emails': emails})
+#         return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
 
-    def get(self, request):
-        form = self.form_class
-        return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+# @method_decorator(csrf_exempt)
+class FilterAlpineJs(View):
 
     def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            emails = Email.objects.filter(receiver=request.user)
-            if cd['sender']:
-                try:
-                    sender = User.objects.get(username=cd['sender'])
-                    emails = emails.filter(user=sender.id)
-                except:
-                    messages.warning(request, "this user does not exist", 'danger')
-                    return redirect('mail_page:filteremail')
-            if cd['subject']:
-                emails = emails.filter(Q(subject__icontains=cd['subject']))
-            if cd['body']:
-                emails = emails.filter(Q(body__icontains=cd['body']))
-            if cd['file'] == True:
-                emails = emails.filter(~Q(file=''))
-            return render(request, 'mail_page/showfilteremail.html', {'username': request.user, 'emails': emails})
-        return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+        text = self.request.POST.get('search', None)
+        email_list = []
+        if text:
+            emails = Email.objects.filter(Q(subject__icontains=text) | Q(receiver__icontains=text)
+                                          | Q(body__icontains=text) | Q(user__username__icontains=text))
+
+            email_list = [{
+                'id': email.id,
+                'subject': email.subject,
+                'user': email.user.username,
+                'receiver': email.receiver} for email in emails]
+
+        return HttpResponse(json.dumps({'list': email_list}))

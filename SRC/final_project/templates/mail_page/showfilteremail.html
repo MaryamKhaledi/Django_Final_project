@@ -14,6 +14,9 @@
                     <small>{{ email.body }}</small>
                 </div>
             </a>
+{#            {% if email.action == 'archive' %}#}
+{#                <a href="{% url 'mail_page:archive' re %}"></a>#}
+{#            {% endif %}#}
         {% endwith %}
     {% endfor %}
 {% endblock %}

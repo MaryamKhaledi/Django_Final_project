@@ -14,7 +14,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'mail_page:filteremail' %}">Filter</a>
+                    {#                    <a class="nav-link" href="{% url 'mail_page:filteremail' %}">Filter</a>#}
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Setting</a>
@@ -23,14 +23,48 @@
         </div>
     </div>
 </nav>
-{#<div class="row">#}
-{#    <div class="col-md-8"></div>#}
-{#    <div class="col-md-4">#}
-{#        <div class="form-group">#}
-{#            <input type="text" class="form-control" id="searchField" placeholder="Search">#}
-{#        </div>#}
-{#    </div>#}
-{#</div>#}
+
+<div class="row">
+    <div class="col-md-8"></div>
+    <div class="col-md-4">
+        <div class="form-group">
+            {#            <form action="{% url 'mail_page:alpine' %}" method="post" id="searchForm">#}
+            {#                {% csrf_token %}#}
+            <input type="text" oninput="searcher(this)" class="form-control"
+                   placeholder="Search" name="search">
+            {#                <input onclick="searchForm(e)" type="submit" hidden value="">#}
+            {#            </form>#}
+            <script>
+                function searcher(el) {
+                    $('#search_list').empty()
+                    let search = el.value
+                    $.ajax({ url:"{% url 'mail_page:alpine' %}",
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        data: 'search='+search
+                    }).done(function (data) {
+                        let emails = JSON.parse(data).list
+                        for (let e of emails){
+                            let text = `subject: ${e.subject} sender: ${e.user} receiver: ${e.receiver}`
+                            let a = `<a href="/mail_page/detail/${e.id}">${text}</a>`
+                            let li = `<li>${a}</li>`
+                            $('#search_list').append(li)
+
+                        }
+                    })
+
+                }
+
+
+            </script>
+            <ul id="search_list">
+
+            </ul>
+        </div>
+    </div>
+</div>
 
 
 
