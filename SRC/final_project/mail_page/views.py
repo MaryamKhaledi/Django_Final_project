@@ -821,45 +821,46 @@ class DeleteEmail(LoginRequiredMixin, View):
 #         return JsonResponse(list(date), safe=False)
 
 
-# class FilterEmail(LoginRequiredMixin, View):  # todo: action
-#     form_class = FilterForm
-#
-#     def get(self, request):
-#         form = self.form_class
-#         return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
-#
-#     def post(self, request):
-#         form = self.form_class(request.POST)
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             emails = Email.objects.filter(receiver=request.user)
-#             if cd['sender']:
-#                 try:
-#                     sender = User.objects.get(username=cd['sender'])
-#                     emails = emails.filter(user=sender.id)
-#                 except:
-#                     messages.warning(request, "this user does not exist", 'danger')
-#                     return redirect('mail_page:filteremail')
-#             if cd['subject']:
-#                 emails = emails.filter(Q(subject__icontains=cd['subject']))
-#             if cd['body']:
-#                 emails = emails.filter(Q(body__icontains=cd['body']))
-#             if cd['file'] == True:
-#                 emails = emails.filter(~Q(file=''))
-#             for email in emails:
-#                 if cd['action'] == 'trash':
-#                     trash = Trash()
-#                     trash.get(request,email.id)
-#                 elif cd['action'] == 'archive':
-#                     archive = Archive()
-#                     archive.get(request,email.id)
-#                 elif cd['action'] == 'label':
-#                     label = AddLabel()
-#                     label.post(email.id)
-#                 else:
-#                     pass
-#             return render(request, 'mail_page/showfilteremail.html', {'username': request.user, 'emails': emails})
-#         return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+class FilterEmail(LoginRequiredMixin, View):  # todo: action
+    form_class = FilterForm
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            emails = Email.objects.filter(receiver=request.user)
+            if cd['sender']:
+                try:
+                    sender = User.objects.get(username=cd['sender'])
+                    emails = emails.filter(user=sender.id)
+                except:
+                    messages.warning(request, "this user does not exist", 'danger')
+                    return redirect('mail_page:filteremail')
+            if cd['subject']:
+                emails = emails.filter(Q(subject__icontains=cd['subject']))
+            if cd['body']:
+                emails = emails.filter(Q(body__icontains=cd['body']))
+            if cd['file'] == True:
+                emails = emails.filter(~Q(file=''))
+            for email in emails:
+                if cd['action'] == 'trash':
+                    trash = Trash()
+                    trash.get(request, email.id)
+                elif cd['action'] == 'archive':
+                    archive = Archive()
+                    archive.get(request, email.id)
+                elif cd['action'] == 'label':
+                    label = AddLabel()
+                    label.post(request, email.id)
+                else:
+                    pass
+            return render(request, 'mail_page/showfilteremail.html', {'username': request.user, 'emails': emails})
+        return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+
 
 # @method_decorator(csrf_exempt)
 class FilterAlpineJs(View):
@@ -868,9 +869,10 @@ class FilterAlpineJs(View):
         text = self.request.POST.get('search', None)
         email_list = []
         if text:
-            emails = Email.objects.filter(Q(subject__icontains=text) | Q(receiver__icontains=text)
-                                          | Q(body__icontains=text) | Q(user__username__icontains=text))
-
+            emails = Email.objects.filter(Q(receiver=request.user) | Q(user=request.user))
+            if emails is not None:
+                emails = emails.filter(Q(subject__icontains=text) | Q(receiver__icontains=text)
+                                       | Q(body__icontains=text) | Q(user__username__icontains=text))
             email_list = [{
                 'id': email.id,
                 'subject': email.subject,
