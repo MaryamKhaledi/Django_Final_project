@@ -10,7 +10,7 @@
                 <a href="{% url 'mail_page:home' %}">Inbox<span> (تعداد)</span></a>
             </li>
             <li>
-                <a href="{% url 'mail_page:sent' %}">Sentbox</a>
+                <a href="{% url 'mail_page:sent' %}">Send box</a>
             </li>
             <li>
                 <a href="{% url 'mail_page:draftbox' %}">Drafts</a>
@@ -39,6 +39,18 @@
                     </li>
                     <li>
                         <a href="{% url 'mail_page:newlabel' %}">Add new labels</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                   class="dropdown-toggle">Signature</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu">
+                    <li>
+                        <a href="{% url 'mail_page:showsignature' %}">Show Signature</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'mail_page:newsignature' %}">New Signature</a>
                     </li>
                 </ul>
             </li>

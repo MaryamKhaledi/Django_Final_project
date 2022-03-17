@@ -4,23 +4,45 @@
 {% block content %}
     <h2 class="mb-4">Detail email</h2>
     <p>from : {{ email.user }}</p>
-    <p>cc : {{ email.cc }}</p>
+    {#    <p>cc : {{ email.cc }}</p>#}
     <p>subject : {{ email.subject }}</p>
-    <p>body : {{ email.body }}</p>
+    <pre>body : {{ email.body }}</pre>
     {#    <p>file : {{ email.file }}</p>#}
     {% if email.file %}
         <p class="view-message text-left"><span style="color: blue">attachment</span>
             <a href="{{ email.file.url }}" class="fa fa-paperclip" style="color: black">File</a></p>
     {% endif %}
-    <p>signature : {{ email.signature }}</p>
+    {#    <p>signature : {{ email.signature }}</p>#}
     <p>time : {{ email.timestamp }}
+    <div style="display:flex; justify-content: flex-start;">
         {% with replies=email.user %}
-            <button type="submit"><a href="{% url 'mail_page:reply' replies %}">Reply</a></button>
+
+            <button type="submit" class="btn btn-warning dropdown-toggle"><a href="{% url 'mail_page:reply' replies %}">Reply</a>
+            </button>
         {% endwith %}
         {% with re=email.id %}
-            <button type="submit"><a href="{% url 'mail_page:trash' re %}">Trash</a></button>
-            <button type="submit"><a href="{% url 'mail_page:archive' re %}">Archive</a></button>
-            <button type="submit"><a href="{% url 'mail_page:forward' re %}">Forward</a></button>
-            <button type="submit"><a href="{% url 'mail_page:addlabel' re %}">add label</a></button>
+
+            <button type="submit" class="btn btn-warning dropdown-toggle"><a
+                    href="{% url 'mail_page:trash' re %}">Trash</a></button>
+            <button type="submit" class="btn btn-warning dropdown-toggle"><a href="{% url 'mail_page:archive' re %}">Archive</a>
+            </button>
+            <button type="submit" class="btn btn-warning dropdown-toggle"><a href="{% url 'mail_page:forward' re %}">Forward</a>
+            </button>
+            <div class="btn-group dropright">
+                <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    add label
+                </button>
+                <div class="dropdown-menu">
+                    {% for label in labels %}
+                        {% with l=label.id %}
+                            <a href="{% url 'mail_page:addlabel' re l %}">{{ label.title }}</a>
+                        {% endwith %}
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
+            </div>
+
         {% endwith %}
 {% endblock %}
