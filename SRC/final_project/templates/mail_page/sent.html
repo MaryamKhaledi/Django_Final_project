@@ -10,7 +10,7 @@
             <p>No subject</p>
         {% endif %}
         {% if email.body %}
-            <p>{{ email.body|truncatewords:8 }}</p>
+            <p>{{ email.body|truncatewords:8|safe }}</p>
         {% else %}
             <p></p>
         {% endif %}

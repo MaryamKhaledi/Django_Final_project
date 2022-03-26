@@ -4,32 +4,32 @@
     <h2 class="mb-4">Inbox</h2>
     <!-- JavaScript Bundle with Popper -->
     <!-- CSS only -->
-{#    <div class="row">#}
-{#        <div class="col-md-8"></div>#}
-{#        <div class="col-md-4">#}
-{#            <div class="form-group">#}
-{#                <input type="text" class="form-control" id="searchField" placeholder="Search">#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
+    {#    <div class="row">#}
+    {#        <div class="col-md-8"></div>#}
+    {#        <div class="col-md-4">#}
+    {#            <div class="form-group">#}
+    {#                <input type="text" class="form-control" id="searchField" placeholder="Search">#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
 
-    {% if messages %}
-        {% for msg in messages %}
-
-            <div class="alert alert-{{ msg.tags }} alert-dismissible">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <strong>{{ msg }}</strong>
-            </div>
-
-            {#        #}
-            {#        <div class="alert alert-success alert-dismissible fade show" role="alert">#}
-            {#            <p>{{ msg }}</p>#}
-            {#<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>#}
-            {#        <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>#}
-            {#</div>#}
-            {#        <p class="alert alert-{{ msg.tags }}">{{ msg }}</p>#}
-        {% endfor %}
-    {% endif %}
+    {#    {% if messages %}#}
+    {#        {% for msg in messages %}#}
+    {##}
+    {#            <div class="alert alert-{{ msg.tags }} alert-dismissible">#}
+    {#                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>#}
+    {#                <strong>{{ msg }}</strong>#}
+    {#            </div>#}
+    {##}
+    {#        #}
+    {#        <div class="alert alert-success alert-dismissible fade show" role="alert">#}
+    {#            <p>{{ msg }}</p>#}
+    {#<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>#}
+    {#        <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>#}
+    {#</div>#}
+    {#        <p class="alert alert-{{ msg.tags }}">{{ msg }}</p>#}
+    {#        {% endfor %}#}
+    {#    {% endif %}#}
     {% for email in all_emails %}
         <a href="{% url 'mail_page:detail' email.id %}">
             <ul class="message-list">
@@ -44,7 +44,7 @@
                     </div>
                     <div class="col col-2">
                         <div class="subject">{{ email.subject }}
-                            &nbsp;&ndash;<span class="teaser">{{ email.body|truncatewords:8 }}</span>
+                            &nbsp;&ndash;<span class="teaser">{{ email.body|truncatewords:8|safe }}</span>
                         </div>
                         <div class="date">{{ email.timestamp }}</div>
                     </div>

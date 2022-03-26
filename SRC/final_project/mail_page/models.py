@@ -2,8 +2,9 @@ from enum import unique
 from django.core.exceptions import ValidationError
 from taggit.managers import TaggableManager
 from accounts.models import User, valid_phone_number
-# from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _
 from django.db import models
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 def file_size(value):
@@ -48,7 +49,7 @@ class Contacts(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contacts_owner")
 
     def __str__(self):
-        return self.name, self.email
+        return f"{self.name}, {self.email}"
 
 
 class Filter(models.Model):
@@ -85,7 +86,8 @@ class Email(models.Model):
     subject = models.CharField(max_length=100, blank=True, null=True)
     label = models.ManyToManyField(Label, blank=True, )
     filter = models.ManyToManyField(Filter, blank=True, )
-    body = models.TextField(blank=True, null=True)
+    # body = models.TextField(blank=True, null=True)
+    body = RichTextUploadingField(null=True, blank=True)
     file = models.FileField(upload_to='documents/%Y/%m/%d/', validators=[file_size], blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # زمان ارسال ایمیل
     is_draft = models.BooleanField(default=False, )

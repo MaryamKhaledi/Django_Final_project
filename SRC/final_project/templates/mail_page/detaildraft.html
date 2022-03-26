@@ -5,7 +5,7 @@
     <p>from : {{ form.user }}</p>
     <p>cc : {{ form.cc }}</p>
     <p>subject : {{ form.subject }}</p>
-    <p>body : {{ form.body }}</p>
+    <p>body : {{ form.body|safe }}</p>
     {% if form.file %}
         <p class="view-message text-left"><span style="color: blue">attachment</span>
             <a href="{{ form.file.url }}" class="fa fa-paperclip" style="color: black">File</a></p>

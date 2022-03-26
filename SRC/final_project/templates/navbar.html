@@ -25,7 +25,18 @@
 </nav>
 
 <div class="row">
-    <div class="col-md-8"></div>
+    <div class="col-md-8">
+        {% if messages %}
+            {% for msg in messages %}
+
+                <div class="alert alert-{{ msg.tags }} alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>{{ msg }}</strong>
+                </div>
+
+            {% endfor %}
+        {% endif %}
+    </div>
     <div class="col-md-4">
         <div class="form-group">
             {#            <form action="{% url 'mail_page:alpine' %}" method="post" id="searchForm">#}
@@ -38,15 +49,16 @@
                 function searcher(el) {
                     $('#search_list').empty()
                     let search = el.value
-                    $.ajax({ url:"{% url 'mail_page:alpine' %}",
+                    $.ajax({
+                        url: "{% url 'mail_page:alpine' %}",
                         method: 'POST',
                         headers: {
                             'X-CSRFToken': '{{ csrf_token }}'
                         },
-                        data: 'search='+search
+                        data: 'search=' + search
                     }).done(function (data) {
                         let emails = JSON.parse(data).list
-                        for (let e of emails){
+                        for (let e of emails) {
                             let text = `subject: ${e.subject} sender: ${e.user} receiver: ${e.receiver}`
                             let a = `<a href="/mail_page/detail/${e.id}">${text}</a>`
                             let li = `<li>${a}</li>`
@@ -65,6 +77,3 @@
         </div>
     </div>
 </div>
-
-
-

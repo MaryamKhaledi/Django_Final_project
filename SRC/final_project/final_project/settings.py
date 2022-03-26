@@ -43,6 +43,10 @@ INSTALLED_APPS = [
     'mail_page',
     'accounts',
     'taggit',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'ckeditor_uploader',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -150,3 +154,12 @@ DEFAULT_FROM_EMAIL = 'send by Maryam website'
 # ..............upload file .............
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# CKEDITOR
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Advanced',
+    },
+}

@@ -71,7 +71,7 @@ class SearchForm(forms.Form):
 class FilterForm(forms.ModelForm):
     class Meta:
         model = Filter
-        fields = ['sender', 'subject', 'body','file' ,'action']
+        fields = ['sender', 'subject', 'body', 'file', 'action']
         # file = forms.TypedChoiceField(widget=forms.RadioSelect)
         file = forms.BooleanField(widget=RadioSelect(choices=[(True, 'Yes'),
                                                               (False, 'No')]))
