@@ -29,6 +29,7 @@ urlpatterns = [
                   path('accounts/', include('accounts.urls')),
                   path('api/', include(router.urls)),
                   path('api-auth/', include('rest_framework.urls')),
+                  path('admin_tools_stats/', include('admin_tools_stats.urls')),
               ] + static(settings.STATIC_URL)
 
 if settings.DEBUG:
