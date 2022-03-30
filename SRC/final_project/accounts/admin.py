@@ -64,7 +64,8 @@ class UserAdmin(admin.ModelAdmin):
     received_emails.short_description = "Received Emails"
 
     def used_storage(self, obj):
-        user_files = Email.objects.filter(Q(user=obj) | Q(receiver=obj)).exclude(Q(file="") | Q(file__isnull=True))
+        user_files = Email.objects.filter(user=obj).exclude(Q(file="") | Q(file__isnull=True))
+        # user_files = Email.objects.filter(Q(user=obj) | Q(receiver=obj)).exclude(Q(file="") | Q(file__isnull=True))
         total = sum(int(objects.file_size) for objects in user_files if objects.file_size)
         total = f"{size_format(total)[0]}{size_format(total)[1]}"
         return total
@@ -78,13 +79,15 @@ class UserAdmin(admin.ModelAdmin):
         usernames = []
         for email in emails_with_file:
             usernames.append(User.objects.get(pk=email.user.id))
+            # asel noskhe :
             # usernames.append(User.objects.filter(Q(username=email.user.username) | Q(username=email.receiver)))
         usernames = set(usernames)
         usernames = list(usernames)
 
         file_data = []
         for user in usernames:
-            files_of_user = emails_with_file.filter(Q(user=user.id) | Q(receiver=user.username))
+            files_of_user = emails_with_file.filter(user=user.id)
+            # files_of_user = emails_with_file.filter(Q(user=user.id) | Q(receiver=user.username)) # asel noskhe
             # files_of_user = emails_with_file.filter(Q(user=user) | Q(receiver=user.username))
             total = sum(int(objects.file_size) for objects in files_of_user)
             total = size_format(total)[0]
