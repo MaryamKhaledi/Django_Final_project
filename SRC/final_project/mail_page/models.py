@@ -106,13 +106,19 @@ class Email(models.Model):
     def __str__(self):
         return f"From: {self.signature}, Sub: {self.subject}"
 
-# class Profile(models.Model):
-#     accounts = models.OneToOneField(User, on_delete=models.CASCADE)
-#     email_confirmed = models.BooleanField(default=False)
+    @property
+    #  در حالی که file_size به صورت متد تعریف شده، اما property کاری کرده که انگار داریم با یک attribute کار می‌کنیم.
+    # و بدون نیاز به پرانتز بتونید متدهاتون رو صدا بزنید.
+    def file_size(self):
+        if self.file and hasattr(self.file, 'size'):
+            return self.file.size
 
+    # class Profile(models.Model):
+    #     accounts = models.OneToOneField(User, on_delete=models.CASCADE)
+    #     email_confirmed = models.BooleanField(default=False)
 
-# @receiver(post_save, sender=User)
-# def update_user_profile(sender, instance, created, **kwargs):
-#     if created:
-#         Profile.objects.create(accounts=instance)
-#     instance.profile.save()
+    # @receiver(post_save, sender=User)
+    # def update_user_profile(sender, instance, created, **kwargs):
+    #     if created:
+    #         Profile.objects.create(accounts=instance)
+    #     instance.profile.save()
