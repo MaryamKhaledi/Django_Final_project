@@ -1,7 +1,6 @@
 import csv
 import json
-
-import username
+# import username
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -618,7 +617,7 @@ class AddLabel(LoginRequiredMixin, View):
         email = Email.objects.get(id=email_id)
         email.label.add(label_i)
         email.save()
-        return redirect('mail_page:labeldetail',label_id)
+        return redirect('mail_page:labeldetail', label_id)
 
     # def post(self, request, email_id, label_id):
     #     form = self.form_class(request.POST)

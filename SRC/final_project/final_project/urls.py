@@ -18,14 +18,19 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from authentications.views import *
+from .api_urls import router
 
 urlpatterns = [
-  path('admin/', admin.site.urls),
-  path('', include('authentications.urls')),
-  path('', index, name='index'),
-  path('mail_page/', include('mail_page.urls', namespace='mail_page')),
-  path('accounts/', include('accounts.urls')),
-] + static(settings.STATIC_URL)
+                  path('admin/', admin.site.urls),
+                  path('ckeditor/', include('ckeditor_uploader.urls')),
+                  path('', include('authentications.urls')),
+                  path('', index, name='index'),
+                  path('mail_page/', include('mail_page.urls', namespace='mail_page')),
+                  path('accounts/', include('accounts.urls')),
+                  path('api/', include(router.urls)),
+                  path('api-auth/', include('rest_framework.urls')),
+                  path('admin_tools_stats/', include('admin_tools_stats.urls')),
+              ] + static(settings.STATIC_URL)
 
 if settings.DEBUG:
-  urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

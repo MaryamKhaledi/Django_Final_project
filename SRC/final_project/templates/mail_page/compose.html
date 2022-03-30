@@ -4,7 +4,15 @@
     <h2 class="mb-4">Compose</h2>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.media }}
+        <p>receiver: {{ form.receiver }}</p>
+        <p>cc: {{ form.cc }}</p>
+        <p>bcc: {{ form.bcc }}</p>
+        <p>subject: {{ form.subject }}</p>
+        <p>body: {{ form.body|safe }}</p>
+        <p>file: {{ form.file }}</p>
+        <p>status: {{ form.status }}</p>
+        {#        {{ form.as_p }}#}
         <button type="submit" name="compose">Send</button>
         <button type="submit" name="createdraft">Draft</button>
     </form>
