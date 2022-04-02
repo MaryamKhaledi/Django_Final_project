@@ -18,7 +18,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from authentications.views import *
-from .api_urls import router
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
@@ -27,7 +26,6 @@ urlpatterns = [
                   path('', index, name='index'),
                   path('mail_page/', include('mail_page.urls', namespace='mail_page')),
                   path('accounts/', include('accounts.urls')),
-                  path('api/', include(router.urls)),
                   path('api-auth/', include('rest_framework.urls')),
                   path('admin_tools_stats/', include('admin_tools_stats.urls')),
               ] + static(settings.STATIC_URL)

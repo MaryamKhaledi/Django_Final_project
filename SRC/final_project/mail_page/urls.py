@@ -1,4 +1,6 @@
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
+
 from . import views
 
 from django.views.decorators.csrf import csrf_exempt
@@ -41,4 +43,7 @@ urlpatterns = [
     # path('searchemail/', csrf_exempt(views.search_email), name='searchemail'),
     path('filteremail/', views.FilterEmail.as_view(), name='filteremail'),
     path('alpine/', views.FilterAlpineJs.as_view(), name='alpine'),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('contacts-api/', views.ContactsApiView.as_view(), name='contacts-api'),
+    path('emails-api/', views.EmailsApiView.as_view(), name='emails-api'),
 ]

@@ -1,6 +1,5 @@
 import csv
 import json
-# import username
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,18 +10,29 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import EmailSerializer, ContactsSerializer
 from accounts.models import User
 from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm, SearchForm, \
     NewSignatureForm, FilterForm
 from .models import Email, Contacts, Label, Signature
 
 
-# User.objets.filter(Q(email__isnull=True)|Q(username__isnull=True))
+class ContactsApiView(APIView):
+    def get(self, request):
+        user = User.objects.get(pk=request.user.id)
+        contacts = Contacts.objects.filter(owner=user)
+        serializer = ContactsSerializer(contacts, many=True)
+        return Response(serializer.data)
 
 
-# def home(request):
-#     return render(request, 'mail_page/home.html', {'username': request.user})
+class EmailsApiView(APIView):
+    def get(self, request):
+        user = User.objects.get(pk=request.user.id)
+        emails = Email.objects.filter(user=user)
+        serializer = EmailSerializer(emails, many=True)
+        return Response(serializer.data)
 
 
 def cc_bcc(cc, bcc):

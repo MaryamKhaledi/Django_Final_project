@@ -87,7 +87,7 @@ class UserAdmin(admin.ModelAdmin):
         file_data = []
         for user in usernames:
             files_of_user = emails_with_file.filter(user=user.id)
-            # files_of_user = emails_with_file.filter(Q(user=user.id) | Q(receiver=user.username)) # asel noskhe
+            # files_of_user = emails_with_file.filter(Q(user=user.id) | Q(receiver=user.username))  # asel noskhe
             # files_of_user = emails_with_file.filter(Q(user=user) | Q(receiver=user.username))
             total = sum(int(objects.file_size) for objects in files_of_user)
             total = size_format(total)[0]
@@ -99,3 +99,23 @@ class UserAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context=extra_context)
 
     used_storage.short_description = "changelist_view"
+
+    # def changelist_view(self, request, extra_context=None):
+    #     usernames = []
+    #     result = User.objects.all()
+    #     file_data = []
+    #     all_messages = []
+    #     for record in result:
+    #         message = Email.objects.filter(pk=record.message_id.id).last()
+    #         all_messages.append(message)
+    #         user = User.objects.filter(pk=message.from_user_id.id).last()
+    #         usernames.append(user)
+    #     usernames = set(usernames)
+    #     usernames = list(usernames)
+    #     for user in usernames:
+    #         total = float(self.get_user_storage(user).split(' ')[0])
+    #         file_data.append({"user": user.username, "total_storage": total})
+    #     extra_context = extra_context or {"chart_data": file_data}
+    #     return super().changelist_view(request, extra_context=extra_context)
+    #
+    # used_storage.short_description = "changelist_view"
