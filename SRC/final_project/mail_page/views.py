@@ -1,6 +1,5 @@
 import csv
 import json
-# import username
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,18 +10,30 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import EmailSerializer, ContactsSerializer
 from accounts.models import User
 from .forms import ComposeForm, ReplyForm, NewContactForm, NewLabelForm, ForwardForm, SearchForm, \
     NewSignatureForm, FilterForm
 from .models import Email, Contacts, Label, Signature
+from log import *
 
 
-# User.objets.filter(Q(email__isnull=True)|Q(username__isnull=True))
+class ContactsApiView(APIView):
+    def get(self, request):
+        user = User.objects.get(pk=request.user.id)
+        contacts = Contacts.objects.filter(owner=user)
+        serializer = ContactsSerializer(contacts, many=True)
+        return Response(serializer.data)
 
 
-# def home(request):
-#     return render(request, 'mail_page/home.html', {'username': request.user})
+class EmailsApiView(APIView):
+    def get(self, request):
+        user = User.objects.get(pk=request.user.id)
+        emails = Email.objects.filter(user=user)
+        serializer = EmailSerializer(emails, many=True)
+        return Response(serializer.data)
 
 
 def cc_bcc(cc, bcc):
@@ -54,8 +65,9 @@ class ComposeEmail(LoginRequiredMixin, View):
                     cc_bcc_list.append(cd['receiver'])
                 receiver_list = list(dict.fromkeys(cc_bcc_list))  # pak kardan tekrariha
                 if len(receiver_list) == 0:
+                    logger.error(f"{request.user} entered a non-existent user as receiver/cc/bcc ")
                     messages.warning(request, 'message not sent(receiver,bcc,cc=none)', 'warning')
-                    return redirect('mail_page:home')
+                    return redirect('mail_page:compose')
                 else:
                     for rec in receiver_list:
                         if cd['cc'] is not None and rec in cd['cc']:
@@ -138,6 +150,7 @@ class NewSignature(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         signature = self.signature_instance
         if signature:
+            logger.warning(f" user:{request.user} tried to add another signature")
             messages.error(request, 'u already have one signature', 'danger')
             return redirect('mail_page:showsignature')
         return super().dispatch(request, *args, **kwargs)
@@ -218,8 +231,7 @@ class Inbox(LoginRequiredMixin, View):
 class SentEmail(LoginRequiredMixin, View):
     def get(self, request):
         username = request.user
-        #  todo: add Q(is_draft=False)
-        sent = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(user=username))
+        sent = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(user=username) & Q(is_draft=False))
         return render(request, 'mail_page/sent.html', {'username': username, 'sent': sent})
 
 
@@ -347,14 +359,16 @@ class DetailEmail(LoginRequiredMixin, View):
 #             return render(request, 'mail_page/reply.html', {'form': form})
 
 
-def reply_email(request, email_user):
+def reply_email(request, email_id):
     # sent = Email.objects.get(id=email_id)
     if request.method == 'POST':
         form = ReplyForm(request.POST, request.FILES)
         if form.is_valid():
             reply_email = form.save(commit=False)
             reply_email.user = request.user
-            reply_email.receiver = email_user
+            e = Email.objects.get(id=email_id)
+            reply_email.receiver = e.user.username
+            reply_email.body = reply_email.body + "\n\nreplyto:\n" + e.user.username + " seyes: " + e.body
             reply_email.save()
             messages.success(request, 'your reply email submitted successfully', 'success')
             return redirect('mail_page:home')
@@ -378,7 +392,6 @@ class ForwardEmail(LoginRequiredMixin, View):
             cd = form.cleaned_data
             # base_mail = form.save(commit=False)
             mail = Email.objects.get(pk=id)
-            # todo: multiple receptions
             cd['subject'] = mail.subject
             cd['body'] = mail.body
             cd['file'] = mail.file
@@ -470,7 +483,7 @@ class ShowContacts(LoginRequiredMixin, View):
 # @method_decorator(login_required)
 def contact_csv(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=venues.csv'
+    response['Content-Disposition'] = 'attachment; filename=contacts.csv'
     writer = csv.writer(response)
     allcontacts = Contacts.objects.filter(owner=request.user)
     writer.writerow(['Name', 'Email', 'Phone_number', 'Other_email', 'Birth_date', 'Owner'])
@@ -514,8 +527,9 @@ class NewContacts(LoginRequiredMixin, View):
                 messages.success(request, f'You Add {cd["name"]} in your contact', 'success')
             except:
                 # todo : sms monaseb
+                logger.error(f" add contact: user:{cd['email']} is non-existent")
                 messages.warning(request, 'email not found !', 'warning')
-                return redirect('mail_page:newcontact')
+                return redirect('mail_page:newcontacts')
         return redirect('mail_page:showcontacts')
 
 
@@ -828,13 +842,28 @@ class DeleteEmail(LoginRequiredMixin, View):
 class FilterEmail(LoginRequiredMixin, View):
     form_class = FilterForm
 
+    def setup(self, request, *args, **kwargs):
+        self.bootstrap_label_instance = Label.objects.filter(owner=request.user)
+        self.l = [i.title for i in self.bootstrap_label_instance]
+        self.l.append('archive')
+        self.l.append('trash')
+        self.l.append('only show emails')
+        return super().setup(request, *args, **kwargs)
+
     def get(self, request):
+        # bootstrap_label = Label.objects.filter(owner=request.user)
+        # l = [i.title for i in bootstrap_label]
+        # l.append('archive')
+        # l.append('trash')
+        # print(self.l)
         form = self.form_class
-        return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+        return render(request, 'mail_page/filter.html',
+                      {'username': request.user, 'bootstrap_label': self.l, 'form': form})
 
     def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
+            filter_obj = form.save(commit=False)
             cd = form.cleaned_data
             emails = Email.objects.filter(Q(receiver=request.user) | Q(user=request.user))
             if cd['sender']:
@@ -842,6 +871,7 @@ class FilterEmail(LoginRequiredMixin, View):
                     sender = User.objects.get(username=cd['sender'])
                     emails = emails.filter(user=sender.id)
                 except:
+                    logger.error(f"{request.user}: failed at filtering with sender:{cd['sender']}")
                     messages.warning(request, "this user does not exist", 'danger')
                     return redirect('mail_page:filteremail')
             if cd['subject']:
@@ -851,19 +881,36 @@ class FilterEmail(LoginRequiredMixin, View):
             if cd['file'] == True:
                 emails = emails.filter(~Q(file=''))
             for email in emails:
-                if cd['action'] == 'trash':
+                if "trash" in request.POST:
+                    print('**')
+                    filter_obj.bootstrap_label = "trash"
+                    filter_obj.owner = request.user
+                    filter_obj.save()
                     trash = Trash()
                     trash.get(request, email.id)
-                elif cd['action'] == 'archive':
+                elif "archive" in request.POST:
+                    filter_obj.bootstrap_label = "archive"
+                    filter_obj.owner = request.user
+                    filter_obj.save()
                     archive = Archive()
                     archive.get(request, email.id)
-                elif cd['action'] == 'label':
-                    label = AddLabel()
-                    label.post(request, email.id)
+                elif "only" in request.POST:
+                    # print(request.POST)
+                    return render(request, 'mail_page/showfilteremail.html',
+                                  {'username': request.user, 'emails': emails})
+
                 else:
-                    pass
+                    filter_obj.bootstrap_label = list(request.POST)[-1]
+                    filter_obj.owner = request.user
+                    filter_obj.save()
+                    # print(request.POST)
+                    lb = Label.objects.get(title=list(request.POST)[-1], owner=request.user)
+                    label = AddLabel()
+                    label.get(request, email.id, lb.id)
+
             return render(request, 'mail_page/showfilteremail.html', {'username': request.user, 'emails': emails})
-        return render(request, 'mail_page/filter.html', {'username': request.user, 'form': form})
+        return render(request, 'mail_page/filter.html',
+                      {'username': request.user, 'form': form, 'bootstrap_label': self.l})
 
 
 # @method_decorator(csrf_exempt)

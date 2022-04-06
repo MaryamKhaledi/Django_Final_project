@@ -4,9 +4,11 @@
     <h2 class="mb-4">Reply</h2>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        {{ form.media }}
         <p>subject: {{ form.subject }}</p>
         <p>body: {{ form.body|safe }}</p>
         <p>file: {{ form.file }}</p>
+        <p>status: {{ form.status }}</p>
         <button type="submit">Send</button>
     </form>
 {% endblock %}

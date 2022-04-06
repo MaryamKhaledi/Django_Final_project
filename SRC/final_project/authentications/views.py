@@ -12,6 +12,7 @@ from utils import send_otp_code
 from .forms import *
 from .tokens import account_activation_token
 from accounts.models import OtpCode
+from log import *
 
 
 def index(request):
@@ -32,11 +33,14 @@ class LoginView(View):
             user_login = User.objects.get(username=username)
             if user.is_active:
                 login(request, user)
+                logger.info(f'user:{username} logged in successfully ')
                 return redirect('mail_page:home')
             else:
+                logger.info(f'{username} is not activated but tried to log in ')
                 return render(request, 'authentications/login.html',
                               messages.error(request, f"{request.POST.get('username')} is not active"))
         else:
+            logger.error('info was wrong!')
             return render(request, 'authentications/login.html',
                           messages.error(request, 'You password or Email is incorrect'))
 
@@ -62,6 +66,7 @@ class RegisterView(View):
                     'token': account_activation_token.make_token(user),
                 })
                 user.email_user(subject, message)
+                logger.info(f'email activation has sent to {user.username} ')
                 messages.success(request, ('Please Confirm your email to complete registration.'))
                 return redirect('login')
 
@@ -80,6 +85,7 @@ class RegisterView(View):
                     'password': form.cleaned_data['password'],
                     'gender': form.cleaned_data['gender'],
                 }
+                logger.info(f"otp code has sent to {form.cleaned_data['username']}")
                 messages.success(request, 'we sent you a code', 'success')
                 # todo: verify template
                 return redirect('verifycode')
@@ -112,10 +118,13 @@ class ActivateAccount(View):
             # user.profile.email_confirmed = True
             user.save()
             login(request, user)
+
+            logger.info(f"user:{user.username} is active now via email")
             messages.success(request, ('Your account have been confirmed.'))
 
             return redirect('login')
         else:
+            logger.error("registration via email failed")
             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
             return redirect('login')
 
@@ -160,9 +169,11 @@ class UserRegisterVerifyCodeView(View):
                 # CustomUser.save()
 
                 code_instance.delete()
+                logger.info(f" user:{user.username}: registered via phone number")
                 messages.success(request, 'you registered.', 'success')
                 return redirect("login")
             else:
+                logger.error(f" user:{cd['username']}: failed at registration via otp")
                 messages.error(request, 'this code is wrong', 'danger')
                 return redirect('verifycode')
 
@@ -214,9 +225,9 @@ class UserRegisterVerifyCodeView(View):
 #
 #             return redirect('login')
 #         else:
-#             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
+#             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been
+#             used.'))
 #             return redirect('login')
-
 
 def logout(request):
     # logout(request)

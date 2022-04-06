@@ -7,8 +7,8 @@
         <input type="submit" value="search">
     </form>
     {% for contact in contacts %}
+        <br>
         {% with replies=contact.id %}
-
             <a href="{% url 'mail_page:detailcontacts' replies %}">
                 <div>
                     <p>{{ contact.name }}</p>
