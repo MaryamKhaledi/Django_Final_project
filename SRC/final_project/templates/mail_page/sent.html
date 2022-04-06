@@ -3,7 +3,7 @@
 {% block content %}
     <h2 class="mb-4">Sent</h2>
     {% for email in sent %}
-        <hr>
+        <hr style="color: #d39e00">
         <p>{{ email.receiver }}</p>
         {% if email.subject %}
             <p>{{ email.subject }}</p>

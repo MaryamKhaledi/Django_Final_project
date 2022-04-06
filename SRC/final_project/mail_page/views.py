@@ -231,8 +231,7 @@ class Inbox(LoginRequiredMixin, View):
 class SentEmail(LoginRequiredMixin, View):
     def get(self, request):
         username = request.user
-        #  todo: add Q(is_draft=False)
-        sent = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(user=username))
+        sent = Email.objects.filter((Q(is_trash=False) & Q(is_archived=False)) & Q(user=username) & Q(is_draft=False))
         return render(request, 'mail_page/sent.html', {'username': username, 'sent': sent})
 
 
@@ -856,7 +855,7 @@ class FilterEmail(LoginRequiredMixin, View):
         # l = [i.title for i in bootstrap_label]
         # l.append('archive')
         # l.append('trash')
-        print(self.l)
+        # print(self.l)
         form = self.form_class
         return render(request, 'mail_page/filter.html',
                       {'username': request.user, 'bootstrap_label': self.l, 'form': form})
@@ -896,7 +895,7 @@ class FilterEmail(LoginRequiredMixin, View):
                     archive = Archive()
                     archive.get(request, email.id)
                 elif "only" in request.POST:
-                    print(request.POST)
+                    # print(request.POST)
                     return render(request, 'mail_page/showfilteremail.html',
                                   {'username': request.user, 'emails': emails})
 
@@ -904,7 +903,7 @@ class FilterEmail(LoginRequiredMixin, View):
                     filter_obj.bootstrap_label = list(request.POST)[-1]
                     filter_obj.owner = request.user
                     filter_obj.save()
-                    print(request.POST)
+                    # print(request.POST)
                     lb = Label.objects.get(title=list(request.POST)[-1], owner=request.user)
                     label = AddLabel()
                     label.get(request, email.id, lb.id)

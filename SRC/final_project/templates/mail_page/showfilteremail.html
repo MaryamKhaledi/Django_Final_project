@@ -4,7 +4,8 @@
     <h2 class="mb-4">Detail</h2>
     <form action="" method="get">
         {{ form }}
-        <input type="submit" value="search">
+{#        {{ form.media }}#}
+{#        <input type="submit" value="search">#}
     </form>
     {% for email in emails %}
         {% with replies=email.id %}

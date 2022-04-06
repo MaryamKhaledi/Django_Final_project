@@ -229,7 +229,6 @@ class UserRegisterVerifyCodeView(View):
 #             used.'))
 #             return redirect('login')
 
-
 def logout(request):
     # logout(request)
     return redirect('login')

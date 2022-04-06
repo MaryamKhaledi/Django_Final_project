@@ -1,13 +1,14 @@
 <nav id="sidebar">
     <div class="p-4 pt-5">
         <div>{{ username }}</div>
-        <a href="#" class="img logo rounded-circle mb-5" style=""></a>
+        <a href="" class="img logo rounded-circle mb-5" style=""></a>
         <ul class="list-unstyled components mb-5">
             <li>
                 <a href="{% url 'mail_page:compose' %}" class="compose-button">Compose</a>
             </li>
             <li>
-                <a href="{% url 'mail_page:home' %}">Inbox<span> (تعداد)</span></a>
+                <a href="{% url 'mail_page:home' %}">Inbox<span></span></a>
+{#                <a href="{% url 'mail_page:home' %}">Inbox<span> (تعداد)</span></a>#}
             </li>
             <li>
                 <a href="{% url 'mail_page:sent' %}">Send box</a>
@@ -31,9 +32,9 @@
                 </ul>
             </li>
             <li>
-                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                <a href="#pageSubmenu1" data-toggle="collapse" aria-expanded="false"
                    class="dropdown-toggle">Labels</a>
-                <ul class="collapse list-unstyled" id="pageSubmenu">
+                <ul class="collapse list-unstyled" id="pageSubmenu1">
                     <li>
                         <a href="{% url 'mail_page:showlabel' %}">Labels</a>
                     </li>
@@ -43,9 +44,9 @@
                 </ul>
             </li>
             <li>
-                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                <a href="#pageSubmenu2" data-toggle="collapse" aria-expanded="false"
                    class="dropdown-toggle">Signature</a>
-                <ul class="collapse list-unstyled" id="pageSubmenu">
+                <ul class="collapse list-unstyled" id="pageSubmenu2">
                     <li>
                         <a href="{% url 'mail_page:showsignature' %}">Show Signature</a>
                     </li>
