@@ -53,17 +53,12 @@ class Contacts(models.Model):
 
 
 class Filter(models.Model):
-    CATEGORY_CHOICES = (
-        ('no', '----'),
-        ('label', 'LABEL'),
-        ('trash', 'TRASH'),
-        ('archive', 'ARCHIVE')
-    )
     sender = models.CharField(max_length=50, blank=True, null=True, help_text=('username@eml.com'))
     subject = models.CharField(max_length=500, blank=True, null=True)
     body = models.TextField(max_length=500, blank=True, null=True)
     file = models.BooleanField(default=False, blank=True, null=True)
-    action = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='no')
+    bootstrap_label = models.CharField(max_length=20, blank=True, null=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="filter_owner")
 
 
 class Email(models.Model):
@@ -75,18 +70,12 @@ class Email(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     signature = models.ForeignKey(Signature, on_delete=models.PROTECT, related_name="signature",
                                   blank=True, null=True)
-    # contacts = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True,
-    #                              related_name="contacts")
-    # receiver = models.ManyToManyField(User, related_name="receiver")
     receiver = models.CharField(max_length=50, blank=True, null=True, help_text=('username@eml.com'))
-    # cc = models.ManyToManyField(User, related_name="cc", blank=True)
     cc = models.CharField(max_length=800, null=True, blank=True)
-    # bcc = models.ManyToManyField(User, related_name="bcc", blank=True)
     bcc = models.CharField(max_length=800, null=True, blank=True)
     subject = models.CharField(max_length=100, blank=True, null=True)
     label = models.ManyToManyField(Label, blank=True, )
     filter = models.ManyToManyField(Filter, blank=True, )
-    # body = models.TextField(blank=True, null=True)
     body = RichTextUploadingField(null=True, blank=True)
     file = models.FileField(upload_to='documents/%Y/%m/%d/', validators=[file_size], blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # زمان ارسال ایمیل
@@ -98,7 +87,6 @@ class Email(models.Model):
     is_trash = models.BooleanField(default=False, blank=True, null=True)
     status = models.CharField(max_length=20, choices=SIGNATURE_CHOICES, default='none')
 
-    # tags = TaggableManager()
 
     class Meta:
         ordering = ['-timestamp']

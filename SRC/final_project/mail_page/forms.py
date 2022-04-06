@@ -23,21 +23,16 @@ class NewSignatureForm(forms.ModelForm):
 class ReplyForm(forms.ModelForm):
     class Meta:
         model = Email
-        fields = ('subject', 'body', 'file')
-        # todo : add signature
-        widgets = {
-            'body': forms.Textarea(attrs={'class': 'form-control'})
-        }
+        fields = ['subject', 'body', 'file', 'status']
 
 
 class ForwardForm(forms.ModelForm):
     class Meta:
         model = Email
-        fields = ('receiver', 'cc', 'bcc')
-        # todo : add signature
-        widgets = {
-            'body': forms.Textarea(attrs={'class': 'form-control'})
-        }
+        fields = ['receiver', 'cc', 'bcc', 'status']
+        # widgets = {
+        #     'body': forms.Textarea(attrs={'class': 'form-control'})
+        # }
 
 
 class DateInput(forms.DateInput):
@@ -71,7 +66,7 @@ class SearchForm(forms.Form):
 class FilterForm(forms.ModelForm):
     class Meta:
         model = Filter
-        fields = ['sender', 'subject', 'body', 'file', 'action']
+        fields = ['sender', 'subject', 'body', 'file']
         # file = forms.TypedChoiceField(widget=forms.RadioSelect)
         file = forms.BooleanField(widget=RadioSelect(choices=[(True, 'Yes'),
                                                               (False, 'No')]))
