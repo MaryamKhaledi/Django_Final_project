@@ -1,0 +1,33 @@
+2022-04-05 11:17:27,284 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-05 11:20:06,462 - INFO - views.py - user:ali@eml.com logged in successfully 
+2022-04-05 11:21:19,468 - INFO - views.py - user:mohammad@eml.com logged in successfully 
+2022-04-05 11:31:57,487 - ERROR - views.py - mohammad@eml.com entered a non-existent user as receiver/cc/bcc 
+2022-04-05 11:35:00,782 - ERROR - views.py - mohammad@eml.com entered a non-existent user as receiver/cc/bcc 
+2022-04-05 22:56:51,285 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 11:01:11,568 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 11:01:32,635 - ERROR - views.py - maryam@eml.com entered a non-existent user as receiver/cc/bcc 
+2022-04-06 12:21:16,898 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 17:28:40,501 - INFO - views.py - email activation has sent to maryam 
+2022-04-06 17:29:19,267 - INFO - views.py - user:maryam@eml.com is active now via email
+2022-04-06 17:29:26,369 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 17:31:23,120 - INFO - views.py - email activation has sent to mohammad 
+2022-04-06 17:31:50,211 - INFO - views.py - user:mohammad@eml.com is active now via email
+2022-04-06 17:32:00,459 - INFO - views.py - user:mohammad@eml.com logged in successfully 
+2022-04-06 17:33:00,744 - INFO - views.py - email activation has sent to sara 
+2022-04-06 17:33:13,716 - INFO - views.py - user:sara@eml.com is active now via email
+2022-04-06 17:33:24,681 - INFO - views.py - user:sara@eml.com logged in successfully 
+2022-04-06 17:36:14,422 - INFO - views.py - otp code has sent to ali
+2022-04-06 17:36:43,473 - INFO - views.py -  user:ali@eml.com: registered via phone number
+2022-04-06 17:36:54,834 - INFO - views.py - user:ali@eml.com logged in successfully 
+2022-04-06 17:38:52,730 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 17:43:02,774 - INFO - views.py - user:ali@eml.com logged in successfully 
+2022-04-06 18:01:15,782 - ERROR - views.py -  add contact: user:mohamad@gmail.com is non-existent
+2022-04-06 18:03:36,234 - ERROR - views.py -  add contact: user:mohamad@gmail.com is non-existent
+2022-04-06 18:04:46,724 - ERROR - views.py -  add contact: user:maam@eml.com is non-existent
+2022-04-06 18:05:27,742 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 18:17:06,435 - INFO - views.py - user:ali@eml.com logged in successfully 
+2022-04-06 18:36:38,382 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 20:30:08,563 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 20:36:43,854 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-06 21:35:54,780 - INFO - views.py - user:maryam@eml.com logged in successfully 
+2022-04-07 01:43:57,736 - ERROR - views.py - info was wrong!
