@@ -44,7 +44,7 @@ class MailPageTest(TestCase):
         email = Email.objects.create(user=user1, receiver="melika@eml.com", cc="user3.username", bcc=user1.username,
                                      status="none")
         received_email = Email.objects.get(user=user1)
-        self.assertEqual(received_email.user.username,"maryamkhanoom@eml.com")
+        self.assertEqual(received_email.user.username, "maryamkhanoom@eml.com")
 
     def test_draft(self):
         user1 = User.objects.create(username="ellyyy@eml.com", password='12345678', is_active=True)
